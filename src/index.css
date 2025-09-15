@@ -2,41 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Mhasla Wheels Design System - Automotive Professional */
 
 @layer base {
   :root {
+    /* Base colors */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 216 19% 16%;
 
+    /* Brand colors - Professional automotive blue */
+    --primary: 214 88% 27%;
+    --primary-foreground: 0 0% 98%;
+    --primary-light: 214 88% 35%;
+    --primary-dark: 214 88% 20%;
+    
+    /* Secondary automotive colors */
+    --secondary: 210 16% 93%;
+    --secondary-foreground: 216 19% 16%;
+    --secondary-dark: 210 16% 85%;
+
+    /* Accent colors */
+    --accent: 45 93% 47%;
+    --accent-foreground: 216 19% 16%;
+    --accent-light: 45 93% 55%;
+
+    /* UI colors */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 216 19% 16%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
+    --popover-foreground: 216 19% 16%;
+    --muted: 210 16% 97%;
+    --muted-foreground: 215 25% 46%;
+    --border: 214 31% 91%;
+    --input: 214 31% 91%;
+    --ring: 214 88% 27%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
+    /* Design system variables */
+    --radius: 0.75rem;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(214 88% 27%), hsl(214 88% 35%));
+    --gradient-hero: linear-gradient(135deg, hsl(214 88% 27%) 0%, hsl(214 88% 20%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(45 93% 47%), hsl(45 93% 55%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 16% 98%));
+    
+    /* Shadows */
+    --shadow-card: 0 4px 6px -1px hsl(214 88% 27% / 0.1), 0 2px 4px -1px hsl(214 88% 27% / 0.06);
+    --shadow-hero: 0 20px 25px -5px hsl(214 88% 27% / 0.1), 0 10px 10px -5px hsl(214 88% 27% / 0.04);
+    --shadow-floating: 0 25px 50px -12px hsl(214 88% 27% / 0.25);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
 
@@ -100,6 +119,153 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+@layer components {
+  /* Hero Section Styles */
+  .hero-section {
+    @apply bg-gradient-to-br from-primary to-primary-dark min-h-screen flex items-center justify-center relative overflow-hidden;
+  }
+  
+  .hero-content {
+    @apply text-center text-primary-foreground z-10 relative px-4 max-w-4xl mx-auto;
+  }
+
+  /* Loading Animation */
+  .loading-wheel {
+    @apply animate-spin-slow;
+  }
+  
+  .loading-car {
+    @apply animate-bounce-gentle;
+  }
+
+  /* Navigation Styles */
+  .nav-link {
+    @apply relative text-foreground hover:text-primary transition-colors duration-300 font-medium;
+  }
+  
+  .nav-link::after {
+    @apply content-[''] absolute w-full h-0.5 bg-primary scale-x-0 bottom-0 left-0 origin-right transition-transform duration-300;
+  }
+  
+  .nav-link:hover::after {
+    @apply scale-x-100 origin-left;
+  }
+
+  /* Service Cards */
+  .service-card {
+    @apply bg-card rounded-xl p-6 shadow-card hover:shadow-hero transition-all duration-300 hover:-translate-y-2 border border-border;
+  }
+  
+  .service-icon {
+    @apply w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center text-primary-foreground mb-4;
+  }
+
+  /* Fleet Cards */
+  .fleet-card {
+    @apply bg-card rounded-xl overflow-hidden shadow-card hover:shadow-floating transition-all duration-300 hover:scale-105 border border-border;
+  }
+
+  /* Floating Elements */
+  .floating-element {
+    @apply animate-float;
+  }
+
+  /* Button Gradients */
+  .btn-gradient {
+    @apply bg-gradient-primary hover:bg-gradient-to-br hover:from-primary-light hover:to-primary transition-all duration-300;
+  }
+  
+  .btn-accent {
+    @apply bg-gradient-accent hover:bg-accent-light transition-all duration-300;
+  }
+}
+
+@layer utilities {
+  /* Custom Animations */
+  .animate-spin-slow {
+    animation: spin 3s linear infinite;
+  }
+  
+  .animate-bounce-gentle {
+    animation: bounce-gentle 2s ease-in-out infinite;
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-fade-in-up {
+    animation: fade-in-up 0.6s ease-out;
+  }
+  
+  .animate-slide-in-right {
+    animation: slide-in-right 0.8s ease-out;
+  }
+
+  /* Custom Keyframes */
+  @keyframes bounce-gentle {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+  
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Responsive Text Utilities */
+  .text-responsive-xl {
+    @apply text-2xl md:text-4xl lg:text-6xl;
+  }
+  
+  .text-responsive-lg {
+    @apply text-xl md:text-2xl lg:text-4xl;
+  }
+  
+  .text-responsive-md {
+    @apply text-lg md:text-xl lg:text-2xl;
+  }
+
+  /* Spacing Utilities */
+  .section-padding {
+    @apply py-16 md:py-24 lg:py-32;
+  }
+  
+  .container-padding {
+    @apply px-4 sm:px-6 lg:px-8;
   }
 }
