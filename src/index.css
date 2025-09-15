@@ -185,6 +185,12 @@
 }
 
 @layer utilities {
+  /* Gradient Utilities */
+  .bg-gradient-primary { background-image: var(--gradient-primary); }
+  .bg-gradient-accent { background-image: var(--gradient-accent); }
+  .bg-gradient-hero { background-image: var(--gradient-hero); }
+  .bg-gradient-subtle { background-image: var(--gradient-subtle); }
+
   /* Custom Animations */
   .animate-spin-slow {
     animation: spin 3s linear infinite;
