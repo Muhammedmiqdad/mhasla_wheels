@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Car, Phone, Mail, MapPin, MessageCircle } from 'lucide-react';
+import { Phone, Mail, MapPin, MessageCircle } from 'lucide-react';
 
 const Footer = () => {
   const quickLinks = [
@@ -21,9 +21,11 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center">
-                <Car className="w-6 h-6 text-accent-foreground" />
-              </div>
+              <img
+                src="/splash-logo.png"
+                alt="Mhasla Wheels Logo"
+                className="h-10 w-auto"
+              />
               <span className="text-2xl font-bold">Mhasla Wheels</span>
             </div>
             <p className="text-primary-foreground/80 mb-6 text-lg">
