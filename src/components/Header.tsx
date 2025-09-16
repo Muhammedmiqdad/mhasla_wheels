@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Car } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface HeaderProps {
@@ -26,10 +26,15 @@ const Header = ({ onBookRide }: HeaderProps) => {
       <div className="max-w-7xl mx-auto container-padding">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-              <Car className="w-6 h-6 text-primary-foreground" />
-            </div>
+          <Link
+            to="/"
+            className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+          >
+            <img
+              src="/splash-logo.png"
+              alt="Mhasla Wheels Logo"
+              className="h-10 w-auto"
+            />
             <span className="text-xl font-bold text-primary">Mhasla Wheels</span>
           </Link>
 
