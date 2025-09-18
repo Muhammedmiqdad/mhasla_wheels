@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BookingModal from '@/components/BookingModal';
 import LoadingScreen from '@/components/LoadingScreen';
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -114,10 +115,10 @@ const Index = () => {
               <ArrowRight size={20} className="ml-2" />
             </Button>
             <Button 
-              onClick={() => setIsBookingModalOpen(true)}
+              asChild
               className="bg-white/20 hover:bg-white/30 text-white border border-white/30 font-semibold px-8 py-3 text-lg backdrop-blur-sm hover:scale-105 transition-transform"
             >
-              Book Your Ride
+              <Link to="/booking">Book Your Ride</Link>
             </Button>
           </div>
         </div>
@@ -194,11 +195,11 @@ const Index = () => {
                       {vehicle.price}
                     </span>
                     <Button 
-                      onClick={() => setIsBookingModalOpen(true)}
+                      asChild
                       size="sm"
                       className="btn-gradient text-primary-foreground"
                     >
-                      Book Now
+                      <Link to="/booking">Book Now</Link>
                     </Button>
                   </div>
                 </div>
@@ -259,10 +260,10 @@ const Index = () => {
           </p>
           <div className="flex flex-col md:flex-row gap-4 justify-center">
             <Button 
-              onClick={() => setIsBookingModalOpen(true)}
+              asChild
               className="btn-accent text-accent-foreground font-semibold px-8 py-3 text-lg"
             >
-              Book Your Ride Now
+              <Link to="/booking">Book Your Ride Now</Link>
             </Button>
             <a href="tel:+919876543210">
               <Button className="bg-white/20 hover:bg-white/30 text-white border border-white/30 font-semibold px-8 py-3 text-lg backdrop-blur-sm">

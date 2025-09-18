@@ -7,6 +7,7 @@ const Footer = () => {
     { name: 'Services', path: '/services' },
     { name: 'Fleet', path: '/fleet' },
     { name: 'Contact', path: '/contact' },
+    { name: 'Feedback', path: '/feedback' },
   ];
 
   const phoneNumber = "+91-9876543210";

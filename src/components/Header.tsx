@@ -1,13 +1,8 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
-interface HeaderProps {
-  onBookRide: () => void;
-}
-
-const Header = ({ onBookRide }: HeaderProps) => {
+const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -17,6 +12,7 @@ const Header = ({ onBookRide }: HeaderProps) => {
     { name: 'Services', path: '/services' },
     { name: 'Fleet', path: '/fleet' },
     { name: 'Contact', path: '/contact' },
+    { name: 'Feedback', path: '/feedback' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -51,14 +47,14 @@ const Header = ({ onBookRide }: HeaderProps) => {
             ))}
           </nav>
 
-          {/* Book Ride Button */}
+          {/* Book Ride Button (Desktop) */}
           <div className="hidden md:block">
-            <Button 
-              onClick={onBookRide}
+            <Link
+              to="/booking"
               className="btn-gradient text-primary-foreground font-semibold px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-300"
             >
               Book Your Ride
-            </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -84,15 +80,14 @@ const Header = ({ onBookRide }: HeaderProps) => {
                   {item.name}
                 </Link>
               ))}
-              <Button 
-                onClick={() => {
-                  onBookRide();
-                  setIsMenuOpen(false);
-                }}
-                className="btn-gradient text-primary-foreground font-semibold py-2 rounded-lg mt-4"
+              {/* Book Ride Button (Mobile) */}
+              <Link
+                to="/booking"
+                onClick={() => setIsMenuOpen(false)}
+                className="btn-gradient text-primary-foreground font-semibold py-2 rounded-lg mt-4 text-center"
               >
                 Book Your Ride
-              </Button>
+              </Link>
             </nav>
           </div>
         )}
