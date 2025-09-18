@@ -36,7 +36,7 @@ const BookingForm = () => {
 
       // ✅ Redirect to Thank You page after success
       setTimeout(() => {
-        window.location.href = "/thankyou";
+        window.location.href = "/thank-you";
       }, 1000);
     } catch (err) {
       console.error(err);
