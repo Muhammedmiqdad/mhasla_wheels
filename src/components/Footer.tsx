@@ -94,7 +94,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-primary-foreground/20 mt-12 pt-8 text-center">
           <p className="text-primary-foreground/60">
-            © 2024 Mhasla Wheels. All rights reserved. | Your Ride, Your Way in Mhasla
+            © 2025 Mhasla Wheels. All rights reserved. Developed by Miqdad +965 41103254 | Your Ride, Your Way in Mhasla
           </p>
         </div>
       </div>
