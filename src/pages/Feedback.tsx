@@ -7,7 +7,11 @@ const Feedback = () => {
   const [form, setForm] = useState({ name: "", rating: 5, comments: "" });
   const [feedbacks, setFeedbacks] = useState<any[]>([]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -44,7 +48,7 @@ const Feedback = () => {
   return (
     <div className="max-w-2xl mx-auto py-12 px-4">
       <h1 className="text-3xl font-bold mb-6">Feedback</h1>
-      
+
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4 mb-12">
         <Input
@@ -72,7 +76,9 @@ const Feedback = () => {
           value={form.comments}
           onChange={handleChange}
         />
-        <Button type="submit" className="w-full btn-gradient text-white">
+
+        {/* ✅ Primary action button (Red) */}
+        <Button type="submit" className="w-full btn-primary">
           Submit Feedback
         </Button>
       </form>
@@ -81,8 +87,13 @@ const Feedback = () => {
       <h2 className="text-2xl font-semibold mb-4">What others said</h2>
       <div className="space-y-4">
         {feedbacks.map((fb) => (
-          <div key={fb.id} className="p-4 border rounded shadow-sm bg-white">
-            <p className="font-semibold">{fb.name} – ⭐ {fb.rating}</p>
+          <div
+            key={fb.id}
+            className="p-4 border rounded shadow-sm bg-white"
+          >
+            <p className="font-semibold">
+              {fb.name} – ⭐ {fb.rating}
+            </p>
             <p className="text-sm text-gray-600">{fb.comments}</p>
           </div>
         ))}

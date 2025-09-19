@@ -2,76 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Mhasla Wheels Design System - Automotive Professional */
+/* Mhasla Wheels Design System - Yellow/Grey Theme */
 
 @layer base {
   :root {
     /* Base colors */
     --background: 0 0% 100%;
-    --foreground: 216 19% 16%;
+    --foreground: 0 0% 0%;
 
-    /* Brand colors - Professional automotive blue */
-    --primary: 214 88% 27%;
-    --primary-foreground: 0 0% 98%;
-    --primary-light: 214 88% 35%;
-    --primary-dark: 214 88% 20%;
-    
-    /* Secondary automotive colors */
-    --secondary: 210 16% 93%;
-    --secondary-foreground: 216 19% 16%;
-    --secondary-dark: 210 16% 85%;
+    /* Brand colors - Client spec */
+    --primary: 50 100% 50%; /* Yellow */
+    --primary-foreground: 0 0% 100%; /* White text */
+    --primary-light: 50 100% 60%;
+    --primary-dark: 45 100% 40%;
 
-    /* Accent colors */
-    --accent: 45 93% 47%;
-    --accent-foreground: 216 19% 16%;
-    --accent-light: 45 93% 55%;
+    /* Secondary (Grey) */
+    --secondary: 0 0% 40%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-dark: 0 0% 30%;
+
+    /* Accent colors for buttons */
+    --accent-blue: 217 91% 60%;
+    --accent-blue-hover: 217 91% 50%;
+    --accent-red: 0 84% 60%;
+    --accent-red-hover: 0 84% 50%;
 
     /* UI colors */
     --card: 0 0% 100%;
-    --card-foreground: 216 19% 16%;
+    --card-foreground: 0 0% 0%;
     --popover: 0 0% 100%;
-    --popover-foreground: 216 19% 16%;
-    --muted: 210 16% 97%;
-    --muted-foreground: 215 25% 46%;
-    --border: 214 31% 91%;
-    --input: 214 31% 91%;
-    --ring: 214 88% 27%;
+    --popover-foreground: 0 0% 0%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 30%;
+    --border: 0 0% 80%;
+    --input: 0 0% 80%;
+    --ring: 50 100% 50%;
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
     /* Design system variables */
     --radius: 0.75rem;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(214 88% 27%), hsl(214 88% 35%));
-    --gradient-hero: linear-gradient(135deg, hsl(214 88% 27%) 0%, hsl(214 88% 20%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(45 93% 47%), hsl(45 93% 55%));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 16% 98%));
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-dark)) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent-blue)), hsl(var(--accent-blue-hover)));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 96%));
     
     /* Shadows */
-    --shadow-card: 0 4px 6px -1px hsl(214 88% 27% / 0.1), 0 2px 4px -1px hsl(214 88% 27% / 0.06);
-    --shadow-hero: 0 20px 25px -5px hsl(214 88% 27% / 0.1), 0 10px 10px -5px hsl(214 88% 27% / 0.04);
-    --shadow-floating: 0 25px 50px -12px hsl(214 88% 27% / 0.25);
+    --shadow-card: 0 4px 6px -1px hsl(var(--secondary) / 0.1), 0 2px 4px -1px hsl(var(--secondary) / 0.06);
+    --shadow-hero: 0 20px 25px -5px hsl(var(--secondary) / 0.1), 0 10px 10px -5px hsl(var(--secondary) / 0.04);
+    --shadow-floating: 0 25px 50px -12px hsl(var(--secondary) / 0.25);
     
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
@@ -102,14 +87,6 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -126,11 +103,12 @@
 @layer components {
   /* Hero Section Styles */
   .hero-section {
-    @apply bg-gradient-to-br from-primary to-primary-dark min-h-screen flex items-center justify-center relative overflow-hidden;
+    @apply bg-primary min-h-screen flex items-center justify-center relative overflow-hidden;
+    color: hsl(var(--primary-foreground));
   }
   
   .hero-content {
-    @apply text-center text-primary-foreground z-10 relative px-4 max-w-4xl mx-auto;
+    @apply text-center z-10 relative px-4 max-w-4xl mx-auto;
   }
 
   /* Loading Animation */
@@ -157,16 +135,16 @@
 
   /* Service Cards */
   .service-card {
-    @apply bg-card rounded-xl p-6 shadow-card hover:shadow-hero transition-all duration-300 hover:-translate-y-2 border border-border;
+    @apply bg-secondary text-secondary-foreground rounded-xl p-6 shadow-card hover:shadow-hero transition-all duration-300 hover:-translate-y-2 border border-border;
   }
   
   .service-icon {
-    @apply w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center text-primary-foreground mb-4;
+    @apply w-12 h-12 bg-primary text-primary-foreground rounded-lg flex items-center justify-center mb-4;
   }
 
   /* Fleet Cards */
   .fleet-card {
-    @apply bg-card rounded-xl overflow-hidden shadow-card hover:shadow-floating transition-all duration-300 hover:scale-105 border border-border;
+    @apply bg-secondary text-secondary-foreground rounded-xl overflow-hidden shadow-card hover:shadow-floating transition-all duration-300 hover:scale-105 border border-border;
   }
 
   /* Floating Elements */
@@ -174,13 +152,24 @@
     @apply animate-float;
   }
 
-  /* Button Gradients */
-  .btn-gradient {
-    @apply bg-gradient-primary hover:bg-gradient-to-br hover:from-primary-light hover:to-primary transition-all duration-300;
+  /* Button Styles for Client Spec */
+  .btn-primary {
+    @apply text-white font-semibold rounded-lg px-6 py-2 inline-flex items-center justify-center transition-all duration-300;
+    background-color: hsl(var(--accent-red));
   }
-  
-  .btn-accent {
-    @apply bg-gradient-accent hover:bg-accent-light transition-all duration-300;
+  .btn-primary:hover {
+    background-color: hsl(var(--accent-red-hover));
+  }
+
+  .btn-secondary {
+    @apply text-white font-semibold rounded-lg px-6 py-2 inline-flex items-center justify-center transition-all duration-300;
+    background-color: hsl(var(--accent-blue));
+  }
+  .btn-secondary:hover {
+    background-color: hsl(var(--accent-blue-hover));
+  }
+  .btn-red {
+    @apply bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-lg transition-all;
   }
 }
 
@@ -192,86 +181,39 @@
   .bg-gradient-subtle { background-image: var(--gradient-subtle); }
 
   /* Custom Animations */
-  .animate-spin-slow {
-    animation: spin 3s linear infinite;
-  }
-  
-  .animate-bounce-gentle {
-    animation: bounce-gentle 2s ease-in-out infinite;
-  }
-  
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-  
-  .animate-fade-in-up {
-    animation: fade-in-up 0.6s ease-out;
-  }
-  
-  .animate-slide-in-right {
-    animation: slide-in-right 0.8s ease-out;
-  }
+  .animate-spin-slow { animation: spin 3s linear infinite; }
+  .animate-bounce-gentle { animation: bounce-gentle 2s ease-in-out infinite; }
+  .animate-float { animation: float 6s ease-in-out infinite; }
+  .animate-fade-in-up { animation: fade-in-up 0.6s ease-out; }
+  .animate-slide-in-right { animation: slide-in-right 0.8s ease-out; }
 
   /* Custom Keyframes */
   @keyframes bounce-gentle {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
   }
   
   @keyframes float {
-    0%, 100% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-20px);
-    }
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
   }
   
   @keyframes fade-in-up {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   
   @keyframes slide-in-right {
-    from {
-      opacity: 0;
-      transform: translateX(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
   }
 
   /* Responsive Text Utilities */
-  .text-responsive-xl {
-    @apply text-2xl md:text-4xl lg:text-6xl;
-  }
-  
-  .text-responsive-lg {
-    @apply text-xl md:text-2xl lg:text-4xl;
-  }
-  
-  .text-responsive-md {
-    @apply text-lg md:text-xl lg:text-2xl;
-  }
+  .text-responsive-xl { @apply text-2xl md:text-4xl lg:text-6xl; }
+  .text-responsive-lg { @apply text-xl md:text-2xl lg:text-4xl; }
+  .text-responsive-md { @apply text-lg md:text-xl lg:text-2xl; }
 
   /* Spacing Utilities */
-  .section-padding {
-    @apply py-16 md:py-24 lg:py-32;
-  }
-  
-  .container-padding {
-    @apply px-4 sm:px-6 lg:px-8;
-  }
+  .section-padding { @apply py-16 md:py-24 lg:py-32; }
+  .container-padding { @apply px-4 sm:px-6 lg:px-8; }
 }

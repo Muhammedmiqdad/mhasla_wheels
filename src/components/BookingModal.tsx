@@ -1,5 +1,4 @@
 import { X, Phone, MessageCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -16,12 +15,13 @@ const BookingModal = ({ isOpen, onClose }: BookingModalProps) => {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-card rounded-2xl shadow-floating max-w-md w-full mx-4 animate-fade-in-up">
+        
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
           <h2 className="text-2xl font-semibold text-card-foreground">Book Your Ride</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-secondary rounded-lg transition-colors"
+            className="p-2 hover:bg-primary/20 rounded-lg transition-colors"
           >
             <X size={20} />
           </button>
@@ -30,8 +30,8 @@ const BookingModal = ({ isOpen, onClose }: BookingModalProps) => {
         {/* Content */}
         <div className="p-6">
           <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
-              <MessageCircle className="w-8 h-8 text-primary-foreground" />
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-secondary text-secondary-foreground">
+              <MessageCircle className="w-8 h-8" />
             </div>
             <h3 className="text-xl font-semibold mb-2 text-card-foreground">
               Feature Under Development
@@ -43,26 +43,23 @@ const BookingModal = ({ isOpen, onClose }: BookingModalProps) => {
 
           {/* Contact Options */}
           <div className="space-y-3">
-            <a
-              href={`tel:${phoneNumber}`}
-              className="w-full"
-            >
-              <Button className="w-full bg-primary hover:bg-primary-dark text-primary-foreground flex items-center justify-center space-x-2 py-3">
+            <a href={`tel:${phoneNumber}`} className="w-full block">
+              <button className="btn-primary w-full flex items-center justify-center space-x-2 py-3">
                 <Phone size={20} />
                 <span>Call {phoneNumber}</span>
-              </Button>
+              </button>
             </a>
 
             <a
               href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full"
+              className="w-full block"
             >
-              <Button className="w-full bg-green-600 hover:bg-green-700 text-white flex items-center justify-center space-x-2 py-3">
+              <button className="btn-secondary w-full flex items-center justify-center space-x-2 py-3 bg-green-600 hover:bg-green-700">
                 <MessageCircle size={20} />
                 <span>WhatsApp Us</span>
-              </Button>
+              </button>
             </a>
           </div>
 

@@ -49,26 +49,77 @@ const BookingForm = () => {
       onSubmit={handleSubmit}
       className="space-y-4 p-6 bg-white shadow-lg rounded-lg max-w-md mx-auto"
     >
-      <input type="text" name="name" placeholder="Name" required onChange={handleChange} className="w-full p-2 border rounded" />
-      <input type="tel" name="phone" placeholder="Phone" required onChange={handleChange} className="w-full p-2 border rounded" />
-      <input type="email" name="email" placeholder="Email" required onChange={handleChange} className="w-full p-2 border rounded" />
-      <input type="datetime-local" name="ride_date" required onChange={handleChange} className="w-full p-2 border rounded" />
-      <input type="text" name="pickup_location" placeholder="Pickup Location" required onChange={handleChange} className="w-full p-2 border rounded" />
-      <input type="text" name="drop_time" placeholder="Drop Time (optional)" onChange={handleChange} className="w-full p-2 border rounded" />
+      <input
+        type="text"
+        name="name"
+        placeholder="Name"
+        required
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+      />
+      <input
+        type="tel"
+        name="phone"
+        placeholder="Phone"
+        required
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+      />
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        required
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+      />
+      <input
+        type="datetime-local"
+        name="ride_date"
+        required
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+      />
+      <input
+        type="text"
+        name="pickup_location"
+        placeholder="Pickup Location"
+        required
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+      />
+      <input
+        type="text"
+        name="drop_time"
+        placeholder="Drop Time (optional)"
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+      />
 
-      <select name="ride_type" onChange={handleChange} className="w-full p-2 border rounded">
+      <select
+        name="ride_type"
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+      >
         <option value="Private">Private</option>
         <option value="Shared">Shared</option>
         <option value="One Way">One Way</option>
         <option value="Return">Return</option>
       </select>
 
-      <button
-        type="submit"
-        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-      >
-        Book Ride
-      </button>
+      {/* Buttons */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <button type="submit" className="btn-primary w-full">
+          Book Ride
+        </button>
+        <button
+          type="button"
+          onClick={() => (window.location.href = "/")}
+          className="btn-secondary w-full"
+        >
+          Cancel
+        </button>
+      </div>
 
       {status && <p className="text-center text-sm mt-2">{status}</p>}
     </form>
