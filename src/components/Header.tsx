@@ -23,8 +23,15 @@ const Header = () => {
       <div className="max-w-7xl mx-auto container-padding">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <img src="/splash-logo.png" alt="Mhasla Wheels Logo" className="h-10 w-auto" />
+          <Link
+            to="/"
+            className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+          >
+            <img
+              src="/splash-logo.png"
+              alt="Mhasla Wheels Logo"
+              className="h-10 w-auto"
+            />
             <span className="text-xl font-bold">Mhasla Wheels</span>
           </Link>
 
@@ -34,7 +41,9 @@ const Header = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`nav-link ${isActive(item.path) ? "text-primary" : ""}`}
+                className={`nav-link ${
+                  isActive(item.path) ? "text-primary" : ""
+                }`}
               >
                 {item.name}
               </Link>
@@ -43,12 +52,12 @@ const Header = () => {
 
           {/* Book Ride Button (Desktop) */}
           <div className="hidden md:block">
-            <Button asChild variant="book">
+            <Button asChild variant="book" size="lg">
               <Link to="/booking">Book Your Ride</Link>
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle */}
           <button
             className="md:hidden p-2 rounded-lg hover:bg-primary/20 transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -66,14 +75,17 @@ const Header = () => {
                 <Link
                   key={item.name}
                   to={item.path}
-                  className={`nav-link py-2 ${isActive(item.path) ? "text-primary" : ""}`}
+                  className={`nav-link py-2 ${
+                    isActive(item.path) ? "text-primary" : ""
+                  }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
 
-              <Button asChild variant="book" className="mt-4 w-full">
+              {/* Mobile Book Ride Button */}
+              <Button asChild variant="book" size="lg" className="mt-4 w-full">
                 <Link to="/booking" onClick={() => setIsMenuOpen(false)}>
                   Book Your Ride
                 </Link>

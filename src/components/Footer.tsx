@@ -1,19 +1,22 @@
-import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, MessageCircle } from 'lucide-react';
+import { Link } from "react-router-dom";
+import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Footer = () => {
   const quickLinks = [
-    { name: 'About Us', path: '/about' },
-    { name: 'Services', path: '/services' },
-    { name: 'Fleet', path: '/fleet' },
-    { name: 'Feedback', path: '/feedback' },
-    { name: 'Contact', path: '/contact' },
+    { name: "About Us", path: "/about" },
+    { name: "Services", path: "/services" },
+    { name: "Fleet", path: "/fleet" },
+    { name: "Feedback", path: "/feedback" },
+    { name: "Contact", path: "/contact" },
   ];
 
   const phoneNumber = "+91-9876543210";
   const whatsappNumber = "+919876543210";
   const email = "info@mhaslawheels.com";
   const address = "123 Main Street, Mhasla City, State 456789";
+
+  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-secondary text-secondary-foreground">
@@ -23,13 +26,18 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-primary text-primary-foreground">
-                <img src="/splash-logo.png" alt="Mhasla Wheels" className="h-6 w-auto" />
+                <img
+                  src="/splash-logo.png"
+                  alt="Mhasla Wheels"
+                  className="h-6 w-auto"
+                />
               </div>
               <span className="text-2xl font-bold">Mhasla Wheels</span>
             </div>
             <p className="opacity-90 mb-6 text-lg">
-              Your trusted partner for comfortable and reliable transportation in Mhasla. 
-              From daily commutes to special occasions, we've got you covered.
+              Your trusted partner for comfortable and reliable transportation
+              in Mhasla. From daily commutes to special occasions, we've got you
+              covered.
             </p>
             <div className="space-y-3">
               <a
@@ -78,10 +86,15 @@ const Footer = () => {
                 href={`https://wa.me/${whatsappNumber}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center space-x-3 hover:text-primary transition-colors group"
+                className="block"
               >
-                <MessageCircle size={20} className="group-hover:animate-bounce" />
-                <span>WhatsApp Chat</span>
+                <Button
+                  variant="blue"
+                  className="w-full flex items-center justify-center space-x-2"
+                >
+                  <MessageCircle size={20} />
+                  <span>WhatsApp Chat</span>
+                </Button>
               </a>
               <p className="opacity-70 text-sm">
                 Available 24/7 for your convenience
@@ -93,7 +106,8 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-primary/30 mt-12 pt-8 text-center">
           <p className="opacity-70">
-            © 2024 Mhasla Wheels. All rights reserved. | Your Ride, Your Way in Mhasla
+            © {currentYear} Mhasla Wheels. All rights reserved. | Your Ride, Your Way in
+            Mhasla
           </p>
         </div>
       </div>

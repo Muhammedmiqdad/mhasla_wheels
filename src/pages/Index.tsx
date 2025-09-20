@@ -103,11 +103,11 @@ const Index = () => {
           </p>
 
           <div className="flex flex-col md:flex-row gap-4 justify-center animate-slide-in-right">
-            <Button asChild variant="book" className="text-lg">
+            <Button asChild variant="book" size="lg">
               <Link to="/booking">Book Your Ride</Link>
             </Button>
 
-            <Button asChild variant="blue" className="text-lg">
+            <Button asChild variant="blue" size="lg">
               <Link to="/fleet" className="flex items-center">
                 Explore Our Fleet <ArrowRight size={20} className="ml-2" />
               </Link>
@@ -209,18 +209,22 @@ const Index = () => {
           <p className="text-xl mb-8 opacity-90">Join thousands of satisfied customers who trust Mhasla Wheels for their transportation needs.</p>
 
           <div className="flex flex-col md:flex-row gap-4 justify-center">
-            <Button asChild variant="book" className="font-semibold px-8 py-3 text-lg">
+            <Button asChild variant="book" size="lg">
               <Link to="/booking">Book Your Ride</Link>
             </Button>
 
             <a href="tel:+919876543210">
-              <Button variant="blue" className="flex items-center">
+              <Button variant="blue" size="lg" className="flex items-center">
                 <Phone size={20} className="mr-2" /> Call Now
               </Button>
             </a>
 
-            <a href="https://wa.me/919876543210?text=Hi! I'm interested in booking a ride with Mhasla Wheels." target="_blank" rel="noopener noreferrer">
-              <Button variant="blue" className="flex items-center bg-green-600 hover:bg-green-700">
+            <a
+              href="https://wa.me/919876543210?text=Hi! I'm interested in booking a ride with Mhasla Wheels."
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="whatsapp" size="lg" className="flex items-center">
                 <MessageCircle size={20} className="mr-2" /> WhatsApp
               </Button>
             </a>

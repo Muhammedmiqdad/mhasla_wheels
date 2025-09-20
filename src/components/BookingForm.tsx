@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 const BookingForm = () => {
   const [formData, setFormData] = useState({
@@ -13,7 +14,9 @@ const BookingForm = () => {
 
   const [status, setStatus] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -107,18 +110,19 @@ const BookingForm = () => {
         <option value="Return">Return</option>
       </select>
 
-      {/* Buttons */}
+      {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <button type="submit" className="btn-primary w-full">
+        <Button type="submit" variant="book" className="w-full">
           Book Ride
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="blue"
+          className="w-full"
           onClick={() => (window.location.href = "/")}
-          className="btn-secondary w-full"
         >
           Cancel
-        </button>
+        </Button>
       </div>
 
       {status && <p className="text-center text-sm mt-2">{status}</p>}

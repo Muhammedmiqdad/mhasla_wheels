@@ -1,4 +1,5 @@
-import { X, Phone, MessageCircle } from 'lucide-react';
+import { X, Phone, MessageCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -10,15 +11,17 @@ const BookingModal = ({ isOpen, onClose }: BookingModalProps) => {
 
   const phoneNumber = "+91-9876543210";
   const whatsappNumber = "+919876543210";
-  const whatsappMessage = "Hi! I'm interested in booking a ride with Mhasla Wheels.";
+  const whatsappMessage =
+    "Hi! I'm interested in booking a ride with Mhasla Wheels.";
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-card rounded-2xl shadow-floating max-w-md w-full mx-4 animate-fade-in-up">
-        
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
-          <h2 className="text-2xl font-semibold text-card-foreground">Book Your Ride</h2>
+          <h2 className="text-2xl font-semibold text-card-foreground">
+            Book Your Ride
+          </h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-primary/20 rounded-lg transition-colors"
@@ -37,29 +40,38 @@ const BookingModal = ({ isOpen, onClose }: BookingModalProps) => {
               Feature Under Development
             </h3>
             <p className="text-muted-foreground mb-6">
-              Our online booking system is coming soon! For now, please contact us directly to book your ride.
+              Our online booking system is coming soon! For now, please contact
+              us directly to book your ride.
             </p>
           </div>
 
           {/* Contact Options */}
           <div className="space-y-3">
             <a href={`tel:${phoneNumber}`} className="w-full block">
-              <button className="btn-primary w-full flex items-center justify-center space-x-2 py-3">
+              <Button
+                variant="book"
+                className="w-full flex items-center justify-center space-x-2 py-3"
+              >
                 <Phone size={20} />
                 <span>Call {phoneNumber}</span>
-              </button>
+              </Button>
             </a>
 
             <a
-              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`}
+              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+                whatsappMessage
+              )}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full block"
             >
-              <button className="btn-secondary w-full flex items-center justify-center space-x-2 py-3 bg-green-600 hover:bg-green-700">
+              <Button
+                variant="blue"
+                className="w-full flex items-center justify-center space-x-2 py-3 bg-green-600 hover:bg-green-700"
+              >
                 <MessageCircle size={20} />
                 <span>WhatsApp Us</span>
-              </button>
+              </Button>
             </a>
           </div>
 
