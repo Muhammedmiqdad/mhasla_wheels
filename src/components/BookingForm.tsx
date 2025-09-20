@@ -32,12 +32,23 @@ const BookingForm = () => {
       });
 
       const result = await res.json();
-      setStatus(result.message || "Success!");
 
-      // ✅ Save booking details locally
-      localStorage.setItem("lastBooking", JSON.stringify(formData));
+      if (!res.ok) {
+        setStatus(result?.message || "Submission failed");
+        return;
+      }
 
-      // ✅ Redirect to Thank You page after success
+      // ✅ Save booking details including booking_id from server
+      const bookingToSave = {
+        ...formData,
+        booking_id: result?.booking?.booking_id || null,
+        status: result?.booking?.status || "pending",
+      };
+      localStorage.setItem("lastBooking", JSON.stringify(bookingToSave));
+
+      setStatus(result.message || "Booking submitted successfully!");
+
+      // ✅ Redirect to Thank You page
       setTimeout(() => {
         window.location.href = "/thank-you";
       }, 1000);
