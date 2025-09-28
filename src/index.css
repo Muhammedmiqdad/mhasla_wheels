@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* index.css */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background: linear-gradient(to bottom right, hsl(var(--primary)), hsl(var(--primary-dark)));
+}
+
+
 /* Mhasla Wheels Design System - Yellow/Grey Theme */
 
 @layer base {

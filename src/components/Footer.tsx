@@ -1,5 +1,6 @@
+// src/components/Footer.tsx
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
+import { Phone, Mail, MapPin, MessageCircle, Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Footer = () => {
@@ -103,12 +104,27 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="border-t border-primary/30 mt-12 pt-8 text-center">
-          <p className="opacity-70">
-            © {currentYear} Mhasla Wheels. All rights reserved. | Your Ride, Your Way in
-            Mhasla
+        {/* Bottom Bar with Social Media */}
+        <div className="border-t border-primary/30 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+          <p className="opacity-70 text-sm">
+            © {currentYear} Mhasla Wheels. All rights reserved. | Your Ride, Your Way in Mhasla
           </p>
+
+          {/* Social Media Icons */}
+          <div className="flex space-x-4">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+              <Facebook size={20} />
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+              <Instagram size={20} />
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+              <Twitter size={20} />
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+              <Linkedin size={20} />
+            </a>
+          </div>
         </div>
       </div>
     </footer>

@@ -1,3 +1,4 @@
+// netlify/functions/create-feedback.js
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -11,7 +12,14 @@ export async function handler(event) {
   }
 
   try {
-    const { name, rating, comments } = JSON.parse(event.body);
+    const { name, rating, comments } = JSON.parse(event.body || "{}");
+
+    if (!name || !rating || !comments) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: "Missing required fields" }),
+      };
+    }
 
     const { error } = await supabase
       .from("feedbacks")
@@ -24,7 +32,7 @@ export async function handler(event) {
       body: JSON.stringify({ message: "Feedback submitted successfully!" }),
     };
   } catch (err) {
-    console.error(err);
+    console.error("create-feedback error:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({ message: "Error submitting feedback" }),

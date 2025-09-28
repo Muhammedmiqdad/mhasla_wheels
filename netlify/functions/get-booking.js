@@ -1,4 +1,4 @@
-// functions/get-booking.js
+// netlify/functions/get-booking.js
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -7,37 +7,54 @@ const supabase = createClient(
 );
 
 export async function handler(event) {
-  const auth = event.headers.authorization || "";
-  const token = auth.replace("Bearer ", "").trim();
+  if (event.httpMethod !== "GET") {
+    return { statusCode: 405, body: "Method Not Allowed" };
+  }
 
-  console.log("DEBUG: Received Authorization header =", auth);
-  console.log("DEBUG: Parsed token =", token);
-  console.log("DEBUG: Expected ADMIN_TOKEN =", process.env.ADMIN_TOKEN);
+  const booking_code = event.queryStringParameters.code;
 
-  if (token !== process.env.ADMIN_TOKEN) {
+  if (!booking_code) {
     return {
-      statusCode: 403,
-      body: JSON.stringify({ error: "Unauthorized" }),
+      statusCode: 400,
+      body: JSON.stringify({ ok: false, message: "Missing booking_code" }),
     };
   }
 
   try {
+    // ✅ Fetch single booking + join with vehicles
     const { data, error } = await supabase
       .from("bookings")
-      .select("*")
-      .order("created_at", { ascending: false });
+      .select(
+        `
+        *,
+        vehicle:vehicles(id, name, type, capacity, per_km_rate, image_url)
+      `
+      )
+      .eq("booking_code", booking_code)
+      .maybeSingle();
 
     if (error) throw error;
 
+    if (!data) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ ok: false, message: "Booking not found" }),
+      };
+    }
+
     return {
       statusCode: 200,
-      body: JSON.stringify({ bookings: data }),
+      body: JSON.stringify({ ok: true, booking: data }),
     };
   } catch (err) {
-    console.error("getBookings error:", err);
+    console.error("get-booking error:", err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err.message }),
+      body: JSON.stringify({
+        ok: false,
+        message: "Error fetching booking",
+        error: err.message,
+      }),
     };
   }
 }

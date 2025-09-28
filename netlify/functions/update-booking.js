@@ -34,7 +34,7 @@ export async function handler(event) {
         admin_comment: reason || null,
         updated_at: new Date().toISOString(),
       })
-      .eq("booking_code", booking_code) // ✅ match on booking_code, not UUID
+      .eq("booking_code", booking_code) // ✅ safer than UUID
       .select()
       .single();
 
@@ -42,13 +42,18 @@ export async function handler(event) {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: "Booking updated successfully", booking: data }),
+      body: JSON.stringify({
+        message: "Booking updated successfully",
+        booking: data,
+      }),
     };
   } catch (err) {
     console.error("update-booking error:", err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err.message || "Error updating booking" }),
+      body: JSON.stringify({
+        error: err.message || "Error updating booking",
+      }),
     };
   }
 }

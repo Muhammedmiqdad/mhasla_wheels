@@ -2,7 +2,12 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -68,31 +73,55 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        'card': 'var(--shadow-card)',
-        'hero': 'var(--shadow-hero)',
-        'floating': 'var(--shadow-floating)',
+        card: "var(--shadow-card)",
+        hero: "var(--shadow-hero)",
+        floating: "var(--shadow-floating)",
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-out": {
+          "0%": { opacity: "1" },
+          "100%": { opacity: "0" },
+        },
+        "spin-slow": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+        "bounce-delay": {
+          "0%, 80%, 100%": { transform: "scale(0)" },
+          "40%": { transform: "scale(1)" },
+        },
+        // 🔥 New global fade
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        fadeOut: {
+          "0%": { opacity: "1" },
+          "100%": { opacity: "0" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in-up": "fade-in-up 0.8s ease-out forwards",
+        "fade-out": "fade-out 0.8s ease-in forwards",
+        "spin-slow": "spin-slow 1.5s linear infinite",
+        "bounce-delay": "bounce-delay 1.4s infinite both",
+        // 🔥 New
+        fadeIn: "fadeIn 1s ease-out forwards",
+        fadeOut: "fadeOut 1s ease-in forwards",
       },
     },
   },

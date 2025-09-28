@@ -1,3 +1,4 @@
+// src/pages/Index.tsx
 import { useState } from "react";
 import {
   Car,
@@ -206,25 +207,37 @@ const Index = () => {
       <section className="section-padding bg-primary text-primary-foreground">
         <div className="max-w-4xl mx-auto text-center container-padding">
           <h2 className="text-responsive-lg font-bold mb-6">Ready to Book Your Ride?</h2>
-          <p className="text-xl mb-8 opacity-90">Join thousands of satisfied customers who trust Mhasla Wheels for their transportation needs.</p>
+          <p className="text-xl mb-8 opacity-90">
+            Join thousands of satisfied customers who trust Mhasla Wheels for their transportation needs.
+          </p>
 
-          <div className="flex flex-col md:flex-row gap-4 justify-center">
-            <Button asChild variant="book" size="lg">
+          <div className="flex flex-col gap-4 md:flex-row md:justify-center">
+            {/* Book Ride */}
+            <Button asChild size="lg" className="w-full md:w-auto bg-red-600 hover:bg-red-700 rounded-full shadow-md">
               <Link to="/booking">Book Your Ride</Link>
             </Button>
 
-            <a href="tel:+919876543210">
-              <Button variant="blue" size="lg" className="flex items-center">
+            {/* Call Now */}
+            <a href="tel:+919876543210" className="w-full md:w-auto">
+              <Button
+                size="lg"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-md flex items-center justify-center"
+              >
                 <Phone size={20} className="mr-2" /> Call Now
               </Button>
             </a>
 
+            {/* WhatsApp CTA */}
             <a
               href="https://wa.me/919876543210?text=Hi! I'm interested in booking a ride with Mhasla Wheels."
               target="_blank"
               rel="noopener noreferrer"
+              className="w-full md:w-auto"
             >
-              <Button variant="whatsapp" size="lg" className="flex items-center">
+              <Button
+                size="lg"
+                className="w-full bg-green-500 hover:bg-green-600 text-white rounded-full shadow-md flex items-center justify-center"
+              >
                 <MessageCircle size={20} className="mr-2" /> WhatsApp
               </Button>
             </a>
@@ -233,6 +246,16 @@ const Index = () => {
       </section>
 
       <Footer />
+
+      {/* Floating WhatsApp Button (desktop only) */}
+      <a
+        href="https://wa.me/919876543210?text=Hi! I need customer support from Mhasla Wheels."
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hidden md:flex fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg p-4 items-center justify-center transition-transform hover:scale-110"
+      >
+        <MessageCircle size={28} />
+      </a>
     </div>
   );
 };

@@ -23,33 +23,71 @@ export async function handler(event) {
 
   try {
     const payload = JSON.parse(event.body || "{}");
-    const { name, phone, email, ride_date, pickup_location, drop_time = null, ride_type = "Private" } = payload;
 
-    // Basic validation
-    if (!name || !phone || !ride_date || !pickup_location) {
+    const {
+      name,
+      phone,
+      email,
+      pickup_location,
+      drop_location,
+      journey_type,
+      depart_date,
+      depart_time,
+      return_date,
+      return_time,
+      vehicle_id,
+      coupon_code,
+      customer_id,
+    } = payload;
+
+    if (!pickup_location) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ message: "Missing required fields: name, phone, ride_date, pickup_location" }),
+        body: JSON.stringify({
+          message: "Missing required field: pickup_location",
+        }),
       };
     }
 
-    // Generate booking_code (human-friendly)
+    const safeName = name || "Guest";
+    const safePhone = phone || "";
+    const safeEmail = email || "";
+
+    // ✅ Ensure ride_date is never null
+    let ride_date;
+    if (depart_date) {
+      if (depart_time) {
+        ride_date = new Date(`${depart_date}T${depart_time}`).toISOString();
+      } else {
+        ride_date = new Date(`${depart_date}T00:00`).toISOString();
+      }
+    } else {
+      ride_date = new Date().toISOString();
+    }
+
     const booking_code = `MB-${uuidv4().split("-")[0]}`;
 
-    // Insert into Supabase bookings table
     const { data, error } = await supabase
       .from("bookings")
       .insert([
         {
+          id: uuidv4(),
           booking_code,
-          name,
-          phone,
-          email,
-          ride_date,
+          customer_id: customer_id || null,
+          name: safeName,
+          phone: safePhone,
+          email: safeEmail,
           pickup_location,
-          drop_time,
-          ride_type,
+          drop_location: drop_location || null,
+          journey_type: journey_type || null,
+          depart_date: depart_date || null,
+          depart_time: depart_time || null,
+          return_date: return_date || null,
+          return_time: return_time || null,
+          vehicle_id: vehicle_id || null,
+          coupon_code: coupon_code || null,
           status: "pending",
+          ride_date,
         },
       ])
       .select("*")
@@ -57,37 +95,51 @@ export async function handler(event) {
 
     if (error) throw error;
 
-    // Optional: Send admin email notification
+    // ✅ SendGrid email to customer (non-blocking)
+    if (process.env.SENDGRID_API_KEY && safeEmail) {
+      (async () => {
+        try {
+          await sgMail.send({
+            to: safeEmail,
+            from: process.env.SENDGRID_FROM || "no-reply@mhaslawheels.com",
+            subject: `Booking Received • ${booking_code}`,
+            html: `<p>Hi ${safeName},</p>
+                   <p>We received your booking <strong>${booking_code}</strong>. Pickup: ${pickup_location}.</p>
+                   <p>Status: Pending. We'll update you when it's confirmed.</p>`,
+            text: `Hi ${safeName},\n\nWe received your booking ${booking_code}. Pickup: ${pickup_location}.\n\nStatus: Pending.`,
+          });
+        } catch (mailErr) {
+          console.warn("SendGrid error (non-blocking):", mailErr?.message || mailErr);
+        }
+      })();
+    }
+
+    // ✅ Notify admins if ADMIN_EMAILS exists
     if (process.env.SENDGRID_API_KEY && process.env.ADMIN_EMAILS) {
-      try {
-        const admins = process.env.ADMIN_EMAILS.split(",").map((s) => s.trim()).filter(Boolean);
-
-        const subject = `New Booking Request • ${booking_code}`;
-        const html = `
-          <p><strong>New booking request</strong></p>
-          <ul>
-            <li><strong>Booking Code:</strong> ${booking_code}</li>
-            <li><strong>Name:</strong> ${name}</li>
-            <li><strong>Phone:</strong> ${phone}</li>
-            <li><strong>Email:</strong> ${email || "-"}</li>
-            <li><strong>Ride Date:</strong> ${ride_date}</li>
-            <li><strong>Pickup Location:</strong> ${pickup_location}</li>
-            <li><strong>Drop Time:</strong> ${drop_time || "-"}</li>
-            <li><strong>Ride Type:</strong> ${ride_type}</li>
-          </ul>
-        `;
-
-        const msg = {
-          to: admins,
-          from: process.env.NOTIFICATION_FROM || "no-reply@mhaslawheels.com",
-          subject,
-          html,
-        };
-
-        await sgMail.send(msg);
-      } catch (notifyErr) {
-        console.error("Failed to send admin notification:", notifyErr);
-      }
+      (async () => {
+        try {
+          const admins = process.env.ADMIN_EMAILS.split(",").map((s) => s.trim()).filter(Boolean);
+          if (admins.length > 0) {
+            await sgMail.send({
+              to: admins,
+              from: process.env.SENDGRID_FROM || "no-reply@mhaslawheels.com",
+              subject: `New Booking Request • ${booking_code}`,
+              html: `<p><strong>New booking request</strong></p>
+                     <ul>
+                       <li><strong>Booking Code:</strong> ${booking_code}</li>
+                       <li><strong>Name:</strong> ${safeName}</li>
+                       <li><strong>Phone:</strong> ${safePhone || "-"}</li>
+                       <li><strong>Email:</strong> ${safeEmail || "-"}</li>
+                       <li><strong>Ride Date:</strong> ${ride_date}</li>
+                       <li><strong>Pickup:</strong> ${pickup_location}</li>
+                       <li><strong>Drop:</strong> ${drop_location || "-"}</li>
+                     </ul>`,
+            });
+          }
+        } catch (adminMailErr) {
+          console.warn("Admin notification error (non-blocking):", adminMailErr?.message || adminMailErr);
+        }
+      })();
     }
 
     return {
@@ -101,7 +153,10 @@ export async function handler(event) {
     console.error("create-booking error:", err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Error creating booking", error: err?.message || err }),
+      body: JSON.stringify({
+        message: "Error creating booking",
+        error: err?.message || err,
+      }),
     };
   }
 }
