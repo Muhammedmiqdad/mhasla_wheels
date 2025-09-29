@@ -1,6 +1,15 @@
 // src/components/Footer.tsx
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin, MessageCircle, Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
+import {
+  Phone,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Facebook,
+  Instagram,
+  Twitter,
+  Linkedin,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Footer = () => {
@@ -23,39 +32,44 @@ const Footer = () => {
     <footer className="bg-secondary text-secondary-foreground">
       <div className="max-w-7xl mx-auto container-padding section-padding">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Brand Section */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-primary text-primary-foreground">
-                <img
-                  src="/splash-logo.png"
-                  alt="Mhasla Wheels"
-                  className="h-6 w-auto"
-                />
-              </div>
-              <span className="text-2xl font-bold">Mhasla Wheels</span>
-            </div>
+          {/* Brand Section (center on mobile, left on desktop) */}
+          <div className="lg:col-span-2 text-center md:text-left">
+            <Link
+              to="/"
+              className="flex items-center justify-center md:justify-start space-x-3 mb-4 hover:opacity-90 hover:scale-105 transition-transform"
+            >
+              <img
+                src="/splash-logo.png"
+                alt="Mhasla Wheels Logo"
+                className="h-10 w-auto rounded-full bg-white p-1 shadow-sm"
+              />
+              <span className="text-2xl font-bold tracking-wide">
+                Mhasla Wheels
+              </span>
+            </Link>
+
             <p className="opacity-90 mb-6 text-lg">
               Your trusted partner for comfortable and reliable transportation
-              in Mhasla. From daily commutes to special occasions, we've got you
-              covered.
+              in Mhasla. From daily commutes to special occasions, we&apos;ve
+              got you covered.
             </p>
+
             <div className="space-y-3">
               <a
                 href={`tel:${phoneNumber}`}
-                className="flex items-center space-x-3 hover:text-primary transition-colors"
+                className="flex items-center justify-center md:justify-start space-x-3 hover:text-primary transition-colors"
               >
                 <Phone size={20} />
                 <span>{phoneNumber}</span>
               </a>
               <a
                 href={`mailto:${email}`}
-                className="flex items-center space-x-3 hover:text-primary transition-colors"
+                className="flex items-center justify-center md:justify-start space-x-3 hover:text-primary transition-colors"
               >
                 <Mail size={20} />
                 <span>{email}</span>
               </a>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center justify-center md:justify-start space-x-3">
                 <MapPin size={20} />
                 <span>{address}</span>
               </div>
@@ -63,7 +77,7 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="text-center md:text-left">
             <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
@@ -80,7 +94,7 @@ const Footer = () => {
           </div>
 
           {/* WhatsApp Contact */}
-          <div>
+          <div className="text-center md:text-left">
             <h3 className="text-xl font-semibold mb-4">Get in Touch</h3>
             <div className="space-y-4">
               <a
@@ -107,21 +121,42 @@ const Footer = () => {
         {/* Bottom Bar with Social Media */}
         <div className="border-t border-primary/30 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
           <p className="opacity-70 text-sm">
-            © {currentYear} Mhasla Wheels. All rights reserved. | Your Ride, Your Way in Mhasla
+            © {currentYear} Mhasla Wheels. All rights reserved. | Your Ride,
+            Your Way in Mhasla
           </p>
 
           {/* Social Media Icons */}
           <div className="flex space-x-4">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors"
+            >
               <Facebook size={20} />
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors"
+            >
               <Instagram size={20} />
             </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors"
+            >
               <Twitter size={20} />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors"
+            >
               <Linkedin size={20} />
             </a>
           </div>

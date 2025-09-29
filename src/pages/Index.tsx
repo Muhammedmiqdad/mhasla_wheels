@@ -218,7 +218,7 @@ const Index = () => {
             </Button>
 
             {/* Call Now */}
-            <a href="tel:+919876543210" className="w-full md:w-auto">
+            <a href="tel:+96541103254" className="w-full md:w-auto">
               <Button
                 size="lg"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-md flex items-center justify-center"
@@ -229,7 +229,7 @@ const Index = () => {
 
             {/* WhatsApp CTA */}
             <a
-              href="https://wa.me/919876543210?text=Hi! I'm interested in booking a ride with Mhasla Wheels."
+              href="https://wa.me/96541103254?text=Hi! I'm interested in booking a ride with Mhasla Wheels."
               target="_blank"
               rel="noopener noreferrer"
               className="w-full md:w-auto"
@@ -249,7 +249,7 @@ const Index = () => {
 
       {/* Floating WhatsApp Button (desktop only) */}
       <a
-        href="https://wa.me/919876543210?text=Hi! I need customer support from Mhasla Wheels."
+        href="https://wa.me/96541103254?text=Hi! I need customer support from Mhasla Wheels."
         target="_blank"
         rel="noopener noreferrer"
         className="hidden md:flex fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg p-4 items-center justify-center transition-transform hover:scale-110"
