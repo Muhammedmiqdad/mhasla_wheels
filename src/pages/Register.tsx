@@ -4,6 +4,14 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { createClient } from "@supabase/supabase-js";
+import { FaGoogle, FaFacebook, FaInstagram } from "react-icons/fa";
+
+// Supabase client for OAuth
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL!,
+  import.meta.env.VITE_SUPABASE_ANON_KEY!
+);
 
 const Register = () => {
   const { register } = useAuth();
@@ -45,7 +53,6 @@ const Register = () => {
         description: "Check your inbox for the confirmation link.",
       });
 
-      // ✅ Redirect to login after 2 seconds
       setTimeout(() => navigate("/login"), 2000);
     } catch (err: any) {
       toast.error("Registration failed", {
@@ -56,6 +63,23 @@ const Register = () => {
     }
   };
 
+  // 🔑 Social Registration/Login
+  const handleSocialRegister = async (provider: "google" | "facebook") => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      toast.error("❌ Social signup failed", {
+        description: err.message,
+      });
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-yellow-400 to-yellow-600 px-4">
       <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-md">
@@ -63,6 +87,7 @@ const Register = () => {
           Create an Account
         </h1>
 
+        {/* Default Registration (Email + Password) */}
         <form onSubmit={handleRegister} className="space-y-4">
           {/* Full Name */}
           <div>
@@ -126,6 +151,40 @@ const Register = () => {
             {loading ? "Registering..." : "Register"}
           </Button>
         </form>
+
+        {/* Divider */}
+        <div className="my-6 flex items-center">
+          <div className="flex-grow h-px bg-gray-300"></div>
+          <span className="mx-3 text-gray-400 text-sm">or</span>
+          <div className="flex-grow h-px bg-gray-300"></div>
+        </div>
+
+        {/* Social Registration SECOND */}
+        <div className="space-y-3">
+          <Button
+            type="button"
+            onClick={() => handleSocialRegister("google")}
+            className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-50"
+          >
+            <FaGoogle className="text-red-500" /> Continue with Google
+          </Button>
+          <Button
+            type="button"
+            onClick={() => handleSocialRegister("facebook")}
+            className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-50"
+          >
+            <FaFacebook className="text-blue-600" /> Continue with Facebook
+          </Button>
+          <Button
+            type="button"
+            onClick={() =>
+              toast.info("⚠️ Instagram OAuth requires custom setup in Supabase")
+            }
+            className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-50"
+          >
+            <FaInstagram className="text-pink-500" /> Continue with Instagram
+          </Button>
+        </div>
 
         <p className="text-sm text-center mt-4 text-gray-600">
           Already have an account?{" "}

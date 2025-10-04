@@ -2,226 +2,166 @@
 @tailwind components;
 @tailwind utilities;
 
-/* index.css */
+/* Base layout */
 html, body, #root {
   height: 100%;
   margin: 0;
-  background: linear-gradient(to bottom right, hsl(var(--primary)), hsl(var(--primary-dark)));
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
 }
 
-
-/* Mhasla Wheels Design System - Yellow/Grey Theme */
-
+/* ------------------------------------------------------------------
+   Mhasla Wheels Premium Design System - Inspired by Dribbble
+   Black / White / Red theme
+------------------------------------------------------------------- */
 @layer base {
   :root {
-    /* Base colors */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
+    /* Brand Primary – Luxury Red */
+    --primary: 0 100% 55%;          /* #FF3B3B */
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 0 100% 65%;
+    --primary-dark: 0 100% 40%;
 
-    /* Brand colors - Client spec */
-    --primary: 50 100% 50%; /* Yellow */
-    --primary-foreground: 0 0% 100%; /* White text */
-    --primary-light: 50 100% 60%;
-    --primary-dark: 45 100% 40%;
-
-    /* Secondary (Grey) */
-    --secondary: 0 0% 40%;
+    /* Secondary – Charcoal Grey */
+    --secondary: 0 0% 10%;          /* #1A1A1A */
     --secondary-foreground: 0 0% 100%;
-    --secondary-dark: 0 0% 30%;
+    --secondary-dark: 0 0% 6%;
 
-    /* Accent colors for buttons */
-    --accent-blue: 217 91% 60%;
-    --accent-blue-hover: 217 91% 50%;
-    --accent-red: 0 84% 60%;
-    --accent-red-hover: 0 84% 50%;
+    /* Neutrals / Backgrounds */
+    --background: 0 0% 4%;          /* Black */
+    --foreground: 0 0% 100%;        /* White */
+    --muted: 0 0% 15%;              /* Muted grey */
+    --muted-foreground: 0 0% 70%;
 
-    /* UI colors */
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 30%;
-    --border: 0 0% 80%;
-    --input: 0 0% 80%;
-    --ring: 50 100% 50%;
+    /* UI Surfaces */
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 100%;
+
+    /* Borders / Inputs */
+    --border: 0 0% 20%;
+    --input: 0 0% 18%;
+    --ring: 0 100% 55%;
+
+    /* Alerts */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Design system variables */
+    /* Design system vars */
     --radius: 0.75rem;
-    
+
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-dark)) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(var(--accent-blue)), hsl(var(--accent-blue-hover)));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 96%));
-    
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary-light)), hsl(var(--primary)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--background)), hsl(var(--secondary)));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
+
     /* Shadows */
-    --shadow-card: 0 4px 6px -1px hsl(var(--secondary) / 0.1), 0 2px 4px -1px hsl(var(--secondary) / 0.06);
-    --shadow-hero: 0 20px 25px -5px hsl(var(--secondary) / 0.1), 0 10px 10px -5px hsl(var(--secondary) / 0.04);
-    --shadow-floating: 0 25px 50px -12px hsl(var(--secondary) / 0.25);
-    
+    --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.6);
+    --shadow-hero: 0 20px 50px rgba(0, 0, 0, 0.8);
+    --shadow-floating: 0 0 25px rgba(255, 59, 59, 0.3);
+
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Poppins', 'Inter', sans-serif;
+    font-weight: 700;
   }
 }
 
+/* ------------------------------------------------------------------
+   Components
+------------------------------------------------------------------- */
 @layer components {
-  /* Hero Section Styles */
-  .hero-section {
-    @apply bg-primary min-h-screen flex items-center justify-center relative overflow-hidden;
-    color: hsl(var(--primary-foreground));
+  /* Buttons */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground rounded-full px-6 py-3 font-semibold shadow-floating transition hover:bg-primary-dark;
   }
-  
-  .hero-content {
-    @apply text-center z-10 relative px-4 max-w-4xl mx-auto;
-  }
-
-  /* Loading Animation */
-  .loading-wheel {
-    @apply animate-spin-slow;
-  }
-  
-  .loading-car {
-    @apply animate-bounce-gentle;
-  }
-
-  /* Navigation Styles */
-  .nav-link {
-    @apply relative text-foreground hover:text-primary transition-colors duration-300 font-medium;
-  }
-  
-  .nav-link::after {
-    @apply content-[''] absolute w-full h-0.5 bg-primary scale-x-0 bottom-0 left-0 origin-right transition-transform duration-300;
-  }
-  
-  .nav-link:hover::after {
-    @apply scale-x-100 origin-left;
-  }
-
-  /* Service Cards */
-  .service-card {
-    @apply bg-secondary text-secondary-foreground rounded-xl p-6 shadow-card hover:shadow-hero transition-all duration-300 hover:-translate-y-2 border border-border;
-  }
-  
-  .service-icon {
-    @apply w-12 h-12 bg-primary text-primary-foreground rounded-lg flex items-center justify-center mb-4;
-  }
-
-  /* Fleet Cards */
-  .fleet-card {
-    @apply bg-secondary text-secondary-foreground rounded-xl overflow-hidden shadow-card hover:shadow-floating transition-all duration-300 hover:scale-105 border border-border;
-  }
-
-  /* Floating Elements */
-  .floating-element {
-    @apply animate-float;
-  }
-
-  /* Button Styles for Client Spec */
-  /* .btn-primary {
-    @apply text-white font-semibold rounded-lg px-6 py-2 inline-flex items-center justify-center transition-all duration-300;
-    background-color: hsl(var(--accent-red));
-  }
-  .btn-primary:hover {
-    background-color: hsl(var(--accent-red-hover));
-  }
+  .btn-primary:hover { background-color: hsl(var(--primary-dark)); }
 
   .btn-secondary {
-    @apply text-white font-semibold rounded-lg px-6 py-2 inline-flex items-center justify-center transition-all duration-300;
-    background-color: hsl(var(--accent-blue));
+    @apply bg-white text-black rounded-full px-6 py-3 font-semibold shadow-md border border-border transition hover:bg-gray-200;
   }
-  .btn-secondary:hover {
-    background-color: hsl(var(--accent-blue-hover));
+  .btn-secondary:hover { @apply bg-gray-200; }
+
+  /* Cards */
+  .card {
+    @apply bg-card text-card-foreground rounded-xl shadow-card p-6 transition;
   }
-  .btn-red {
-    @apply bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-lg transition-all;
-  } */
+
+  .service-card,
+  .fleet-card {
+    @apply bg-card text-card-foreground rounded-xl p-6 shadow-card border border-border transition-all;
+  }
+  .service-card:hover,
+  .fleet-card:hover {
+    @apply shadow-floating;
+    transform: translateY(-6px);
+  }
+
+  /* Hero Section */
+  .hero-section {
+    @apply relative min-h-screen flex items-center justify-center overflow-hidden;
+    background: var(--gradient-hero);
+    color: hsl(var(--primary-foreground));
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 4rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .floating-element {
+    @apply transform-gpu;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Layout helpers */
+  .section-padding { padding-top: 4rem; padding-bottom: 4rem; }
+  @screen md { .section-padding { padding-top: 6rem; padding-bottom: 6rem; } }
+
+  .container-padding { padding-left: 1rem; padding-right: 1rem; }
+  @screen md { .container-padding { padding-left: 2rem; padding-right: 2rem; } }
+
+  .text-muted-foreground { color: hsl(var(--muted-foreground)); }
 }
 
+/* ------------------------------------------------------------------
+   Utilities
+------------------------------------------------------------------- */
 @layer utilities {
-  /* Gradient Utilities */
-  .bg-gradient-primary { background-image: var(--gradient-primary); }
-  .bg-gradient-accent { background-image: var(--gradient-accent); }
-  .bg-gradient-hero { background-image: var(--gradient-hero); }
-  .bg-gradient-subtle { background-image: var(--gradient-subtle); }
+  .text-responsive-xl { font-size: 1.75rem; line-height: 1.2; }
+  @media (min-width: 768px) { .text-responsive-xl { font-size: 2.5rem; } }
+  @media (min-width: 1024px) { .text-responsive-xl { font-size: 3.5rem; } }
 
-  /* Custom Animations */
-  .animate-spin-slow { animation: spin 3s linear infinite; }
-  .animate-bounce-gentle { animation: bounce-gentle 2s ease-in-out infinite; }
-  .animate-float { animation: float 6s ease-in-out infinite; }
-  .animate-fade-in-up { animation: fade-in-up 0.6s ease-out; }
-  .animate-slide-in-right { animation: slide-in-right 0.8s ease-out; }
+  .text-responsive-lg { font-size: 1.25rem; }
+  @media (min-width: 768px) { .text-responsive-lg { font-size: 1.75rem; } }
+  @media (min-width: 1024px) { .text-responsive-lg { font-size: 2.25rem; } }
 
-  /* Custom Keyframes */
-  @keyframes bounce-gentle {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-  
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-  }
-  
-  @keyframes fade-in-up {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  @keyframes slide-in-right {
-    from { opacity: 0; transform: translateX(30px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
+  .hover-lift:hover { transform: translateY(-6px); }
+}
 
-  /* Responsive Text Utilities */
-  .text-responsive-xl { @apply text-2xl md:text-4xl lg:text-6xl; }
-  .text-responsive-lg { @apply text-xl md:text-2xl lg:text-4xl; }
-  .text-responsive-md { @apply text-lg md:text-xl lg:text-2xl; }
-
-  /* Spacing Utilities */
-  .section-padding { @apply py-16 md:py-24 lg:py-32; }
-  .container-padding { @apply px-4 sm:px-6 lg:px-8; }
+/* ------------------------------------------------------------------
+   Animations
+------------------------------------------------------------------- */
+@keyframes float {
+  0%,100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
 }

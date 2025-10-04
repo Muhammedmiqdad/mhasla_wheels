@@ -11,6 +11,9 @@ interface Booking {
   drop_location?: string;
   ride_date?: string;
   journey_type?: string;
+  custom_journey_details?: string;
+  custom_rate?: number | string;
+  custom_unit?: string;
   depart_date?: string;
   depart_time?: string;
   return_date?: string;
@@ -40,7 +43,6 @@ export default function AdminBookings() {
   // Modal
   const [selected, setSelected] = useState<Booking | null>(null);
 
-  // ✅ Protect route: redirect if not logged in
   useEffect(() => {
     const token = localStorage.getItem("ADMIN_TOKEN");
     if (!token) {
@@ -73,28 +75,42 @@ export default function AdminBookings() {
 
   const applyFilters = () => {
     let result = [...bookings];
+
     if (search) {
       result = result.filter(
         (b) =>
-          b.name.toLowerCase().includes(search.toLowerCase()) ||
-          b.booking_code.toLowerCase().includes(search.toLowerCase())
+          (b.name || "").toLowerCase().includes(search.toLowerCase()) ||
+          (b.booking_code || "").toLowerCase().includes(search.toLowerCase())
       );
     }
-    if (statusFilter !== "all") {
+
+    if (statusFilter === "custom") {
+      result = result.filter(
+        (b) =>
+          !!b.custom_journey_details ||
+          (b.custom_rate !== undefined && b.custom_rate !== null) ||
+          !!b.custom_unit
+      );
+    } else if (statusFilter !== "all") {
       result = result.filter((b) => b.status === statusFilter);
     }
+
     setFiltered(result);
     setPage(1);
   };
 
   const formatDateTime = (date?: string, time?: string) => {
     if (date) {
-      return new Date(`${date}T${time || "00:00"}:00`).toLocaleString();
+      try {
+        return new Date(`${date}T${time || "00:00"}:00`).toLocaleString();
+      } catch {
+        return date;
+      }
     }
     return null;
   };
 
-  // ✅ Confirm booking
+  // Confirm booking
   const confirmBooking = async (booking_code: string) => {
     try {
       const res = await fetch("/.netlify/functions/update-booking", {
@@ -114,7 +130,7 @@ export default function AdminBookings() {
     }
   };
 
-  // ✅ Reject booking
+  // Reject booking
   const rejectBooking = async (booking_code: string) => {
     const reason = prompt("Enter rejection reason (optional):") || "";
     try {
@@ -141,9 +157,25 @@ export default function AdminBookings() {
 
   return (
     <div className="p-6">
-      {/* Sticky header */}
+      {/* Dashboard Header with Navigation */}
       <div className="sticky top-0 bg-white shadow-md p-4 mb-4 flex flex-col md:flex-row items-center justify-between gap-3 z-10">
-        <h1 className="text-xl font-bold text-yellow-600">Admin Dashboard</h1>
+        <div className="flex items-center gap-6">
+          <h1 className="text-xl font-bold text-yellow-600">Admin Dashboard</h1>
+          <nav className="flex gap-3">
+            <a
+              href="/admin/bookings"
+              className="px-3 py-1 rounded font-medium bg-yellow-100 text-yellow-700"
+            >
+              Bookings
+            </a>
+            <a
+              href="/admin/fleet"
+              className="px-3 py-1 rounded font-medium hover:bg-gray-100"
+            >
+              Fleet
+            </a>
+          </nav>
+        </div>
         <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
           <input
             type="text"
@@ -163,6 +195,7 @@ export default function AdminBookings() {
             <option value="rejected">Rejected</option>
             <option value="in_progress">In Progress</option>
             <option value="completed">Completed</option>
+            <option value="custom">Custom Only</option>
           </select>
           <Button onClick={fetchBookings} variant="book">
             Refresh
@@ -176,6 +209,42 @@ export default function AdminBookings() {
           >
             Logout
           </Button>
+        </div>
+      </div>
+
+      {/* ✅ Dashboard Stats Section */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <div className="bg-white shadow rounded-lg p-4 text-center">
+          <p className="text-gray-500 text-sm">Total</p>
+          <p className="text-2xl font-bold text-yellow-600">
+            {bookings.length}
+          </p>
+        </div>
+        <div className="bg-white shadow rounded-lg p-4 text-center">
+          <p className="text-gray-500 text-sm">Pending</p>
+          <p className="text-2xl font-bold text-yellow-600">
+            {bookings.filter((b) => b.status === "pending").length}
+          </p>
+        </div>
+        <div className="bg-white shadow rounded-lg p-4 text-center">
+          <p className="text-gray-500 text-sm">Confirmed</p>
+          <p className="text-2xl font-bold text-green-600">
+            {bookings.filter((b) => b.status === "confirmed").length}
+          </p>
+        </div>
+        <div className="bg-white shadow rounded-lg p-4 text-center">
+          <p className="text-gray-500 text-sm">Rejected</p>
+          <p className="text-2xl font-bold text-red-600">
+            {bookings.filter((b) => b.status === "rejected").length}
+          </p>
+        </div>
+        <div className="bg-white shadow rounded-lg p-4 text-center">
+          <p className="text-gray-500 text-sm">Custom</p>
+          <p className="text-2xl font-bold text-blue-600">
+            {bookings.filter(
+              (b) => b.custom_journey_details || b.custom_rate || b.custom_unit
+            ).length}
+          </p>
         </div>
       </div>
 
@@ -197,61 +266,80 @@ export default function AdminBookings() {
                 <th className="p-3 border">Code</th>
                 <th className="p-3 border">Customer</th>
                 <th className="p-3 border">Journey</th>
+                <th className="p-3 border">Custom</th>
                 <th className="p-3 border">Pickup</th>
                 <th className="p-3 border">Status</th>
                 <th className="p-3 border">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {pageData.map((b) => (
-                <tr key={b.booking_code} className="hover:bg-gray-50">
-                  <td className="p-3 border font-mono">{b.booking_code}</td>
-                  <td className="p-3 border">
-                    <div className="font-medium">{b.name}</div>
-                    <div className="text-xs text-gray-500">{b.phone}</div>
-                  </td>
-                  <td className="p-3 border capitalize">
-                    {b.journey_type || "-"}
-                  </td>
-                  <td className="p-3 border">{b.pickup_location}</td>
-                  <td
-                    className={`p-3 border font-semibold capitalize ${
-                      b.status === "pending"
-                        ? "text-yellow-600"
-                        : b.status === "confirmed"
-                        ? "text-green-600"
-                        : b.status === "rejected"
-                        ? "text-red-600"
-                        : "text-gray-600"
-                    }`}
-                  >
-                    {b.status}
-                  </td>
-                  <td className="p-3 border flex gap-2 flex-wrap">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setSelected(b)}
+              {pageData.map((b) => {
+                const hasCustom =
+                  !!b.custom_journey_details ||
+                  (b.custom_rate !== undefined && b.custom_rate !== null) ||
+                  !!b.custom_unit;
+
+                return (
+                  <tr key={b.booking_code} className="hover:bg-gray-50">
+                    <td className="p-3 border font-mono">{b.booking_code}</td>
+                    <td className="p-3 border">
+                      <div className="font-medium">{b.name}</div>
+                      <div className="text-xs text-gray-500">{b.phone}</div>
+                    </td>
+                    <td className="p-3 border capitalize">
+                      {b.journey_type || "-"}
+                    </td>
+                    <td className="p-3 border">
+                      {hasCustom ? (
+                        <span className="inline-block px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
+                          Yes
+                        </span>
+                      ) : (
+                        <span className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                          No
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-3 border">{b.pickup_location || "-"}</td>
+                    <td
+                      className={`p-3 border font-semibold capitalize ${
+                        b.status === "pending"
+                          ? "text-yellow-600"
+                          : b.status === "confirmed"
+                          ? "text-green-600"
+                          : b.status === "rejected"
+                          ? "text-red-600"
+                          : "text-gray-600"
+                      }`}
                     >
-                      View
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="bg-green-500 text-white hover:bg-green-600"
-                      onClick={() => confirmBooking(b.booking_code)}
-                    >
-                      Confirm
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => rejectBooking(b.booking_code)}
-                    >
-                      Reject
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+                      {b.status}
+                    </td>
+                    <td className="p-3 border flex gap-2 flex-wrap">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setSelected(b)}
+                      >
+                        View
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="bg-green-500 text-white hover:bg-green-600"
+                        onClick={() => confirmBooking(b.booking_code)}
+                      >
+                        Confirm
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => rejectBooking(b.booking_code)}
+                      >
+                        Reject
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
 
@@ -290,12 +378,42 @@ export default function AdminBookings() {
               Booking Details
             </h2>
             <div className="space-y-2 text-sm">
-              <p><strong>Code:</strong> {selected.booking_code}</p>
-              <p><strong>Name:</strong> {selected.name} ({selected.phone})</p>
-              <p><strong>Email:</strong> {selected.email || "-"}</p>
-              <p><strong>Pickup:</strong> {selected.pickup_location}</p>
-              <p><strong>Drop:</strong> {selected.drop_location || "-"}</p>
-              <p><strong>Journey:</strong> {selected.journey_type || "-"}</p>
+              <p>
+                <strong>Code:</strong> {selected.booking_code}
+              </p>
+              <p>
+                <strong>Name:</strong> {selected.name} ({selected.phone})
+              </p>
+              <p>
+                <strong>Email:</strong> {selected.email || "-"}
+              </p>
+              <p>
+                <strong>Pickup:</strong> {selected.pickup_location}
+              </p>
+              <p>
+                <strong>Drop:</strong> {selected.drop_location || "-"}
+              </p>
+              <p>
+                <strong>Journey:</strong> {selected.journey_type || "-"}
+              </p>
+
+              {selected.custom_journey_details && (
+                <p>
+                  <strong>Custom Details:</strong>{" "}
+                  {selected.custom_journey_details}
+                </p>
+              )}
+              {selected.custom_rate && (
+                <p>
+                  <strong>Custom Rate:</strong> ₹{selected.custom_rate}
+                </p>
+              )}
+              {selected.custom_unit && (
+                <p>
+                  <strong>Unit:</strong> {selected.custom_unit}
+                </p>
+              )}
+
               {selected.depart_date && (
                 <p>
                   <strong>Depart:</strong>{" "}
@@ -314,11 +432,19 @@ export default function AdminBookings() {
                   {new Date(selected.ride_date).toLocaleString()}
                 </p>
               )}
-              <p><strong>Vehicle ID:</strong> {selected.vehicle_id || "-"}</p>
-              <p><strong>Coupon:</strong> {selected.coupon_code || "-"}</p>
-              <p><strong>Status:</strong> {selected.status}</p>
+              <p>
+                <strong>Vehicle ID:</strong> {selected.vehicle_id || "-"}
+              </p>
+              <p>
+                <strong>Coupon:</strong> {selected.coupon_code || "-"}
+              </p>
+              <p>
+                <strong>Status:</strong> {selected.status}
+              </p>
               {selected.admin_comment && (
-                <p><strong>Admin Note:</strong> {selected.admin_comment}</p>
+                <p>
+                  <strong>Admin Note:</strong> {selected.admin_comment}
+                </p>
               )}
               <p>
                 <strong>Created:</strong>{" "}

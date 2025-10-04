@@ -26,7 +26,25 @@ export async function handler(event) {
       .from("bookings")
       .select(
         `
-        *,
+        id,
+        booking_code,
+        customer_id,
+        name,
+        phone,
+        email,
+        pickup_location,
+        drop_location,
+        journey_type,
+        custom_journey_details, -- ✅ explicitly include
+        depart_date,
+        depart_time,
+        return_date,
+        return_time,
+        vehicle_id,
+        coupon_code,
+        status,
+        ride_date,
+        created_at,
         vehicle:vehicles(id, name, type, capacity, per_km_rate, image_url)
       `
       )

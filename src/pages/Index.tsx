@@ -82,11 +82,11 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       <Header />
 
       {/* Hero Section */}
-      <section className="hero-section bg-primary text-primary-foreground relative">
+      <section className="hero-section relative">
         <div className="absolute inset-0 bg-black/20" />
         <div className="hero-content">
           <div className="floating-element">
@@ -104,11 +104,13 @@ const Index = () => {
           </p>
 
           <div className="flex flex-col md:flex-row gap-4 justify-center animate-slide-in-right">
-            <Button asChild variant="book" size="lg">
+            {/* Red Primary Button */}
+            <Button asChild size="lg" variant="primary">
               <Link to="/booking">Book Your Ride</Link>
             </Button>
 
-            <Button asChild variant="blue" size="lg">
+            {/* White Secondary Button */}
+            <Button asChild size="lg" variant="secondary">
               <Link to="/fleet" className="flex items-center">
                 Explore Our Fleet <ArrowRight size={20} className="ml-2" />
               </Link>
@@ -129,7 +131,7 @@ const Index = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {services.map((service, index) => (
-              <div key={index} className="service-card group bg-secondary text-secondary-foreground border border-border">
+              <div key={index} className="service-card group border border-border">
                 <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-primary text-primary-foreground">
                   <service.icon size={24} />
                 </div>
@@ -146,12 +148,14 @@ const Index = () => {
         <div className="max-w-6xl mx-auto container-padding">
           <div className="text-center mb-16">
             <h2 className="text-responsive-lg font-bold mb-4">Our Fleet Preview</h2>
-            <p className="text-xl opacity-90 max-w-2xl mx-auto">Choose from our diverse range of well-maintained vehicles</p>
+            <p className="text-xl opacity-90 max-w-2xl mx-auto">
+              Choose from our diverse range of well-maintained vehicles
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {fleetPreview.map((vehicle, index) => (
-              <div key={index} className="fleet-card bg-secondary text-secondary-foreground border border-border">
+              <div key={index} className="fleet-card border border-border">
                 <div className="h-48 rounded-t-xl flex items-center justify-center bg-primary text-primary-foreground">
                   <Car size={80} />
                 </div>
@@ -170,7 +174,7 @@ const Index = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-lg font-bold text-white">{vehicle.price}</span>
 
-                    <Button asChild variant="book" size="sm">
+                    <Button asChild size="sm" variant="primary">
                       <Link to="/booking">Book Now</Link>
                     </Button>
                   </div>
@@ -186,7 +190,9 @@ const Index = () => {
         <div className="max-w-6xl mx-auto container-padding">
           <div className="text-center mb-16">
             <h2 className="text-responsive-lg font-bold mb-4">Why Choose Mhasla Wheels?</h2>
-            <p className="text-xl opacity-90 max-w-2xl mx-auto">We're committed to providing the best transportation experience</p>
+            <p className="text-xl opacity-90 max-w-2xl mx-auto">
+              We're committed to providing the best transportation experience
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -212,8 +218,8 @@ const Index = () => {
           </p>
 
           <div className="flex flex-col gap-4 md:flex-row md:justify-center">
-            {/* Book Ride */}
-            <Button asChild size="lg" className="w-full md:w-auto bg-red-600 hover:bg-red-700 rounded-full shadow-md">
+            {/* Primary CTA */}
+            <Button asChild size="lg" variant="primary" className="w-full md:w-auto">
               <Link to="/booking">Book Your Ride</Link>
             </Button>
 
@@ -247,7 +253,7 @@ const Index = () => {
 
       <Footer />
 
-      {/* Floating WhatsApp Button (desktop only) */}
+      {/* Floating WhatsApp Button */}
       <a
         href="https://wa.me/96541103254?text=Hi! I need customer support from Mhasla Wheels."
         target="_blank"

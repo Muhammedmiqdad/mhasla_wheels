@@ -4,15 +4,16 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@supabase/supabase-js";
+import { FaGoogle, FaFacebook, FaInstagram } from "react-icons/fa";
 
-// ⚡ create a client for resend calls
+// ⚡ create a client for resend calls + OAuth
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL!,
   import.meta.env.VITE_SUPABASE_ANON_KEY!
 );
 
 const Login = () => {
-  const { login, refreshUser, user } = useAuth(); // ✅ always available at top level
+  const { login, refreshUser, user } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -52,9 +53,7 @@ const Login = () => {
         return;
       }
 
-      // ✅ Refresh metadata after login
       await refreshUser();
-      // ✅ Navigation handled by useEffect (above)
     } catch (err: any) {
       setError(err.message || "Login failed");
     } finally {
@@ -79,7 +78,22 @@ const Login = () => {
     }
   };
 
-  return ( 
+  // 🔑 Social Login
+  const handleSocialLogin = async (provider: "google" | "facebook") => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      setError("❌ Social login failed: " + err.message);
+    }
+  };
+
+  return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-yellow-400 to-yellow-600 px-4">
       <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-md">
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
@@ -92,13 +106,14 @@ const Login = () => {
           </div>
         )}
 
+        {/* Email + Password Form FIRST */}
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">Email</label>
             <input
               type="email"
               value={email}
-              autoComplete="off" // 🚫 prevents browser autofill
+              autoComplete="off"
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-yellow-500"
@@ -110,7 +125,7 @@ const Login = () => {
             <input
               type="password"
               value={password}
-              autoComplete="new-password" // 🚫 no password manager autofill
+              autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-yellow-500"
@@ -126,7 +141,7 @@ const Login = () => {
           </Button>
         </form>
 
-        {/* Resend confirmation email if needed */}
+        {/* Resend Confirmation */}
         {needsConfirmation && (
           <div className="mt-4 text-center">
             <Button
@@ -141,6 +156,41 @@ const Login = () => {
           </div>
         )}
 
+        {/* Divider */}
+        <div className="my-6 flex items-center">
+          <div className="flex-grow h-px bg-gray-300"></div>
+          <span className="mx-3 text-gray-400 text-sm">or</span>
+          <div className="flex-grow h-px bg-gray-300"></div>
+        </div>
+
+        {/* Social Login SECOND */}
+        <div className="space-y-3">
+          <Button
+            type="button"
+            onClick={() => handleSocialLogin("google")}
+            className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-50"
+          >
+            <FaGoogle className="text-red-500" /> Continue with Google
+          </Button>
+          <Button
+            type="button"
+            onClick={() => handleSocialLogin("facebook")}
+            className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-50"
+          >
+            <FaFacebook className="text-blue-600" /> Continue with Facebook
+          </Button>
+          <Button
+            type="button"
+            onClick={() =>
+              alert("⚠️ Instagram OAuth requires custom setup in Supabase")
+            }
+            className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-50"
+          >
+            <FaInstagram className="text-pink-500" /> Continue with Instagram
+          </Button>
+        </div>
+
+        {/* Register Link */}
         <p className="text-sm text-center mt-4 text-gray-600">
           Don’t have an account?{" "}
           <Link to="/register" className="text-yellow-600 hover:underline">

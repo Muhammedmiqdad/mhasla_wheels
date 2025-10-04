@@ -12,6 +12,7 @@ type Vehicle = {
   per_km_rate?: number;
   base_rate?: number;
   image_url?: string;
+  availability?: boolean; // ✅ include availability
 };
 
 export default function BookingForm() {
@@ -25,6 +26,9 @@ export default function BookingForm() {
     return_date: "",
     return_time: "",
     coupon_code: "",
+    custom_journey_details: "", // ✅ NEW FIELD
+    custom_rate: "", // ✅ NEW FIELD
+    custom_unit: "", // ✅ NEW FIELD
     name: user?.user_metadata?.name || "",
     phone: user?.user_metadata?.phone || "",
     email: user?.email || "",
@@ -59,7 +63,11 @@ export default function BookingForm() {
   }, []);
 
   // ✅ Handle input change
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     setFormData((s) => ({ ...s, [e.target.name]: e.target.value }));
   };
 
@@ -162,11 +170,14 @@ export default function BookingForm() {
           { key: "one_way", label: "One Way" },
           { key: "round_trip", label: "Round Trip" },
           { key: "shared", label: "Shared / Seat" },
+          { key: "customize", label: "Customize" }, // ✅ NEW
         ].map((opt) => (
           <button
             type="button"
             key={opt.key}
-            onClick={() => setFormData((s) => ({ ...s, journey_type: opt.key }))}
+            onClick={() =>
+              setFormData((s) => ({ ...s, journey_type: opt.key }))
+            }
             className={`px-4 py-2 border rounded-lg transition ${
               formData.journey_type === opt.key
                 ? "bg-yellow-400 text-white border-yellow-500"
@@ -178,52 +189,94 @@ export default function BookingForm() {
         ))}
       </div>
 
-      {/* Vehicles */}
+      {/* Custom Journey Fields */}
+      {formData.journey_type === "customize" && (
+        <div className="space-y-3 mt-3">
+          <textarea
+            name="custom_journey_details"
+            value={formData.custom_journey_details}
+            onChange={handleChange}
+            placeholder="Describe your custom journey (e.g., multiple stops, special requirements)"
+            className="w-full p-3 border rounded"
+            rows={3}
+            required
+          />
+
+          <input
+            type="number"
+            name="custom_rate"
+            value={formData.custom_rate}
+            onChange={handleChange}
+            placeholder="Enter custom rate (₹)"
+            className="w-full p-3 border rounded"
+            required
+          />
+
+          <select
+            name="custom_unit"
+            value={formData.custom_unit}
+            onChange={handleChange}
+            className="w-full p-3 border rounded"
+            required
+          >
+            <option value="">Select Unit</option>
+            <option value="km">Per Km</option>
+            <option value="hour">Per Hour</option>
+            <option value="day">Per Day</option>
+            <option value="trip">Per Trip</option>
+          </select>
+        </div>
+      )}
+
+      {/* Vehicles (✅ Only available ones) */}
       <div>
         <h4 className="font-semibold mb-2">Available Vehicles</h4>
         {loadingVehicles ? (
           <p className="text-sm text-gray-500">Loading vehicles...</p>
         ) : (
           <div className="space-y-3">
-            {vehicles.length === 0 && (
+            {vehicles.filter((v) => v.availability !== false).length === 0 && (
               <p className="text-sm text-gray-400">No vehicles available.</p>
             )}
-            {vehicles.map((v) => (
-              <div
-                key={v.id}
-                onClick={() => setSelectedVehicle(v)}
-                className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition ${
-                  selectedVehicle?.id === v.id
-                    ? "ring-2 ring-yellow-400 bg-yellow-50"
-                    : "hover:bg-gray-50"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  {v.image_url ? (
-                    <img
-                      src={v.image_url}
-                      alt={v.name}
-                      className="w-10 h-10 object-contain"
-                    />
-                  ) : (
-                    <Car className="w-8 h-8 text-gray-500" />
-                  )}
-                  <div>
-                    <div className="font-medium">{v.name}</div>
-                    <div className="text-sm text-gray-500">
-                      {v.type || ""} {v.capacity ? `• ${v.capacity} seats` : ""}
+            {vehicles
+              .filter((v) => v.availability !== false) // ✅ only available
+              .map((v) => (
+                <div
+                  key={v.id}
+                  onClick={() => setSelectedVehicle(v)}
+                  className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition ${
+                    selectedVehicle?.id === v.id
+                      ? "ring-2 ring-yellow-400 bg-yellow-50"
+                      : "hover:bg-gray-50"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    {v.image_url ? (
+                      <img
+                        src={v.image_url}
+                        alt={v.name}
+                        className="w-10 h-10 object-contain"
+                      />
+                    ) : (
+                      <Car className="w-8 h-8 text-gray-500" />
+                    )}
+                    <div>
+                      <div className="font-medium">{v.name}</div>
+                      <div className="text-sm text-gray-500">
+                        {v.type || ""}{" "}
+                        {v.capacity ? `• ${v.capacity} seats` : ""}
+                      </div>
                     </div>
                   </div>
+                  <div className="font-semibold">
+                    {v.per_km_rate
+                      ? `₹${v.per_km_rate}/km`
+                      : v.base_rate
+                      ? `₹${v.base_rate}`
+                      : "-"}
+                  </div>
                 </div>
-                <div className="font-semibold">
-                  {v.per_km_rate
-                    ? `₹${v.per_km_rate}/km`
-                    : v.base_rate
-                    ? `₹${v.base_rate}`
-                    : "-"}
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         )}
       </div>

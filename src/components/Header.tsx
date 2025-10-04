@@ -23,17 +23,16 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/"); // ✅ redirect home after logout
+    navigate("/"); // redirect to home after logout
   };
 
-  // ✅ Get display name (prefer user_metadata.name)
   const displayName =
     user?.user_metadata?.name ||
     (user?.email ? user.email.split("@")[0] : null);
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 bg-[#666666] text-white shadow-md z-40">
+      <header className="fixed top-0 left-0 right-0 bg-secondary text-white shadow-md z-40">
         <div className="max-w-7xl mx-auto container-padding">
           <div className="flex items-center justify-between h-16">
             {/* Logo + Brand */}
@@ -114,14 +113,9 @@ const Header = () => {
               )}
             </nav>
 
-            {/* Desktop CTA (red button) */}
+            {/* Desktop CTA */}
             <div className="hidden md:block">
-              <Button
-                asChild
-                size="lg"
-                className="shadow-floating bg-red-600 text-white rounded-full px-6 py-2 
-                           hover:bg-red-700 hover:scale-105 transition-transform"
-              >
+              <Button asChild size="lg" variant="primary" className="shadow-floating">
                 <Link to="/booking">Book Your Ride</Link>
               </Button>
             </div>
@@ -138,7 +132,7 @@ const Header = () => {
 
           {/* Mobile Navigation */}
           {isMenuOpen && (
-            <div className="md:hidden py-4 border-t border-white/20 bg-[#666666] text-white">
+            <div className="md:hidden py-4 border-t border-white/20 bg-secondary text-white">
               <nav className="flex flex-col space-y-4">
                 {navItems.map((item) => (
                   <Link
@@ -195,12 +189,8 @@ const Header = () => {
                   </>
                 )}
 
-                {/* Mobile CTA inside menu (red button) */}
-                <Button
-                  asChild
-                  size="lg"
-                  className="mt-4 w-full bg-red-600 text-white rounded-full hover:bg-red-700 transition"
-                >
+                {/* Mobile CTA inside menu */}
+                <Button asChild size="lg" variant="primary" className="mt-4 w-full">
                   <Link to="/booking" onClick={() => setIsMenuOpen(false)}>
                     Book Your Ride
                   </Link>
@@ -211,17 +201,12 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Floating CTA (mobile only, red button) */}
-      <Link
-        to="/booking"
-        className="fixed bottom-6 right-6 z-50 md:hidden 
-                   bg-red-600 text-white font-semibold tracking-wide
-                   px-6 py-3 rounded-full shadow-floating 
-                   hover:bg-red-700 hover:scale-110 active:scale-95 
-                   transition-transform duration-300"
-      >
-        Book Now
-      </Link>
+      {/* Floating CTA (mobile only) */}
+      <div className="md:hidden fixed bottom-6 right-6 z-50">
+        <Button asChild size="lg" variant="primary" className="shadow-floating rounded-full">
+          <Link to="/booking">Book Now</Link>
+        </Button>
+      </div>
     </>
   );
 };

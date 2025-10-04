@@ -31,6 +31,9 @@ export async function handler(event) {
       pickup_location,
       drop_location,
       journey_type,
+      custom_journey_details, // ✅ NEW FIELD
+      custom_rate, // ✅ NEW FIELD
+      custom_unit, // ✅ NEW FIELD
       depart_date,
       depart_time,
       return_date,
@@ -80,6 +83,9 @@ export async function handler(event) {
           pickup_location,
           drop_location: drop_location || null,
           journey_type: journey_type || null,
+          custom_journey_details: custom_journey_details || null,
+          custom_rate: custom_rate || null, // ✅ save rate
+          custom_unit: custom_unit || null, // ✅ save unit
           depart_date: depart_date || null,
           depart_time: depart_time || null,
           return_date: return_date || null,
@@ -133,6 +139,10 @@ export async function handler(event) {
                        <li><strong>Ride Date:</strong> ${ride_date}</li>
                        <li><strong>Pickup:</strong> ${pickup_location}</li>
                        <li><strong>Drop:</strong> ${drop_location || "-"}</li>
+                       <li><strong>Journey Type:</strong> ${journey_type || "-"}</li>
+                       <li><strong>Custom Journey Details:</strong> ${custom_journey_details || "-"}</li>
+                       <li><strong>Custom Rate:</strong> ${custom_rate || "-"}</li>
+                       <li><strong>Custom Unit:</strong> ${custom_unit || "-"}</li>
                      </ul>`,
             });
           }

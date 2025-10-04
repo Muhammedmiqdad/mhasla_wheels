@@ -10,10 +10,6 @@ export async function handler(event) {
   const auth = event.headers.authorization || "";
   const token = auth.replace("Bearer ", "").trim();
 
-  console.log("DEBUG: Received Authorization header =", auth);
-  console.log("DEBUG: Parsed token =", token);
-  console.log("DEBUG: Expected ADMIN_TOKEN =", process.env.ADMIN_TOKEN);
-
   if (token !== process.env.ADMIN_TOKEN) {
     return {
       statusCode: 403,
@@ -24,7 +20,31 @@ export async function handler(event) {
   try {
     const { data, error } = await supabase
       .from("bookings")
-      .select("*")
+      .select(`
+        id,
+        booking_code,
+        customer_id,
+        name,
+        phone,
+        email,
+        pickup_location,
+        drop_location,
+        journey_type,
+        custom_journey_details,
+        custom_rate,         
+        custom_unit,         
+        depart_date,
+        depart_time,
+        return_date,
+        return_time,
+        vehicle_id,
+        coupon_code,
+        status,
+        ride_date,
+        created_at,
+        updated_at,
+        admin_comment
+      `)
       .order("created_at", { ascending: false });
 
     if (error) throw error;

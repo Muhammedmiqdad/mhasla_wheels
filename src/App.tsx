@@ -16,10 +16,12 @@ import ThankYou from "./pages/ThankYou";
 import Feedback from "./pages/Feedback";
 import NotFound from "./pages/NotFound";
 import CompleteProfile from "./pages/CompleteProfile";
+import AuthCallback from "./pages/AuthCallback";
 
 // ✅ Admin pages
 import AdminLogin from "./pages/AdminLogin";
 import AdminBookings from "./pages/AdminBookings";
+import AdminFleet from "@/pages/AdminFleet";
 
 // ✅ Customer pages
 import Login from "./pages/Login";
@@ -74,10 +76,12 @@ const App = () => {
               <Route path="/register" element={<Register />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/complete-profile" element={<CompleteProfile />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
 
               {/* Admin routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/bookings" element={<AdminBookings />} />
+              <Route path="/admin/fleet" element={<AdminFleet />} />
 
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />
