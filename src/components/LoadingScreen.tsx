@@ -11,26 +11,13 @@ const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
 
   useEffect(() => {
     const video = videoRef.current;
+    if (video) video.play().catch(() => null);
 
-    if (video) {
-      video
-        .play()
-        .then(() => console.log("video.play() success"))
-        .catch((err) => console.warn("Video autoplay failed:", err));
-    }
-
-    // Fallback timer
-    const fallback = setTimeout(() => {
-      triggerFadeOut();
-    }, 4000);
-
-    const handleEnded = () => triggerFadeOut();
-
-    video?.addEventListener("ended", handleEnded);
-
+    const fallback = setTimeout(triggerFadeOut, 4000);
+    video?.addEventListener("ended", triggerFadeOut);
     return () => {
       clearTimeout(fallback);
-      video?.removeEventListener("ended", handleEnded);
+      video?.removeEventListener("ended", triggerFadeOut);
     };
   }, []);
 
@@ -39,39 +26,47 @@ const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
     setTimeout(() => {
       setIsVisible(false);
       onLoadingComplete();
-    }, 1000); // match fade-out duration
+    }, 800);
   };
 
   if (!isVisible) return null;
 
   return (
     <div
-      className={`
-        fixed inset-0 z-50 flex flex-col items-center justify-center
-        bg-gradient-to-br from-primary to-primary-dark
-        ${isFading ? "animate-fadeOut" : "animate-fadeIn"}
-      `}
+      className={`fixed inset-0 z-50 flex flex-col items-center justify-center 
+        bg-gradient-to-b from-white to-gray-100 overflow-hidden
+        ${isFading ? "animate-fadeOut" : "animate-fadeIn"}`}
     >
-      {/* Jeep loader video */}
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
-        className="w-40 md:w-64 drop-shadow-lg"
-      >
-        <source src="/jeep-loader.webm" type="video/webm" />
-        <source src="/jeep-loader.mp4" type="video/mp4" />
-      </video>
+      {/* Logo with soft card shadow */}
+      <div className="bg-white shadow-xl rounded-xl p-3 mb-8 animate-fade-in-up">
+        <img
+          src="/splash-logo.png"
+          alt="Mhasla Wheels Logo"
+          className="w-40 md:w-56 drop-shadow-sm"
+        />
+      </div>
 
-      {/* Branding text */}
-      <div className="mt-6 text-center text-primary-foreground">
-        <h1 className="text-3xl md:text-5xl font-bold animate-fade-in-up">
+      {/* Soft halo glow behind jeep */}
+      <div className="relative">
+        <div className="absolute inset-0 w-48 h-48 rounded-full bg-yellow-300/20 blur-2xl animate-pulse-slow"></div>
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          className="relative w-44 md:w-72 drop-shadow-lg animate-float"
+        >
+          <source src="/jeep-loader.webm" type="video/webm" />
+          <source src="/jeep-loader.mp4" type="video/mp4" />
+        </video>
+      </div>
+
+      {/* Text */}
+      <div className="mt-6 text-center text-gray-700 animate-fade-in-up">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-wide">
           Mhasla Wheels
         </h1>
-        <p className="text-lg md:text-2xl opacity-90 animate-fade-in-up">
-          Your Ride, Your Way
-        </p>
+        <p className="text-lg md:text-xl opacity-80">Your Ride, Your Way</p>
       </div>
     </div>
   );

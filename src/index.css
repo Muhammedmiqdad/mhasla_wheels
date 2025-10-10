@@ -165,3 +165,51 @@ html, body, #root {
   0%,100% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
 }
+
+/* ------------------------------------------------------------------
+   Additional Premium Animations for Loading Screen & Hero
+------------------------------------------------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-10px); }
+}
+
+@keyframes floatSoft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.05); }
+}
+
+/* Reusable utility classes */
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.animate-fadeOut {
+  animation: fadeOut 0.8s ease-in forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeIn 1.2s ease-in-out;
+}
+
+.animate-float {
+  animation: floatSoft 3s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: floatSoft 3s ease-in-out infinite 0.5s;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}

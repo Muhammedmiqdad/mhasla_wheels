@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -23,44 +24,58 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/"); // redirect to home after logout
+    navigate("/");
   };
 
   const displayName =
     user?.user_metadata?.name ||
     (user?.email ? user.email.split("@")[0] : null);
 
+  // Detect scroll to add background blur / shadow
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 bg-secondary text-white shadow-md z-40">
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          isScrolled
+            ? "backdrop-blur-md bg-black/70 shadow-lg border-b border-red-600/30"
+            : "bg-transparent"
+        }`}
+      >
         <div className="max-w-7xl mx-auto container-padding">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo + Brand */}
+          <div className="flex items-center justify-between h-16 md:h-20">
+            {/* Logo */}
             <Link
               to="/"
-              className="flex items-center space-x-3 hover:opacity-90 hover:scale-105 transition-transform"
+              className="flex items-center gap-3 hover:opacity-90 transition-transform hover:scale-105"
             >
               <img
                 src="/splash-logo.png"
                 alt="Mhasla Wheels Logo"
                 className="h-10 w-auto rounded-full bg-white p-1 shadow-sm"
               />
-              <span className="text-2xl font-bold tracking-wide">
-                Mhasla Wheels
+              <span className="text-2xl md:text-3xl font-bold tracking-wide text-white">
+                Mhasla <span className="text-red-500">Wheels</span>
               </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
+            <nav className="hidden md:flex items-center gap-8">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   to={item.path}
-                  aria-current={isActive(item.path) ? "page" : undefined}
-                  className={`nav-link transition-colors ${
+                  className={`relative text-sm font-semibold uppercase tracking-wide transition-all duration-300 ${
                     isActive(item.path)
-                      ? "text-white font-semibold border-b-2 border-white"
-                      : "text-white/80 hover:text-white font-semibold"
+                      ? "text-white after:content-[''] after:absolute after:w-full after:h-[2px] after:bg-red-500 after:left-0 after:-bottom-1"
+                      : "text-white/70 hover:text-white hover:after:content-[''] hover:after:absolute hover:after:w-full hover:after:h-[2px] hover:after:bg-red-500 hover:after:left-0 hover:after:-bottom-1 hover:after:transition-all"
                   }`}
                 >
                   {item.name}
@@ -72,21 +87,13 @@ const Header = () => {
                 <>
                   <Link
                     to="/login"
-                    className={`nav-link transition-colors ${
-                      isActive("/login")
-                        ? "text-white font-semibold border-b-2 border-white"
-                        : "text-white/80 hover:text-white font-semibold"
-                    }`}
+                    className={`text-white/80 hover:text-white font-semibold`}
                   >
                     Login
                   </Link>
                   <Link
                     to="/register"
-                    className={`nav-link transition-colors ${
-                      isActive("/register")
-                        ? "text-white font-semibold border-b-2 border-white"
-                        : "text-white/80 hover:text-white font-semibold"
-                    }`}
+                    className={`text-white/80 hover:text-white font-semibold`}
                   >
                     Register
                   </Link>
@@ -95,17 +102,13 @@ const Header = () => {
                 <>
                   <Link
                     to="/profile"
-                    className={`nav-link transition-colors ${
-                      isActive("/profile")
-                        ? "text-white font-semibold border-b-2 border-white"
-                        : "text-white/80 hover:text-white font-semibold"
-                    }`}
+                    className="text-white/80 hover:text-white font-semibold"
                   >
                     Hi, {displayName}
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="text-white/80 hover:text-white font-semibold transition-colors"
+                    className="text-white/70 hover:text-red-400 font-semibold transition"
                   >
                     Logout
                   </button>
@@ -115,96 +118,107 @@ const Header = () => {
 
             {/* Desktop CTA */}
             <div className="hidden md:block">
-              <Button asChild size="lg" variant="primary" className="shadow-floating">
-                <Link to="/booking">Book Your Ride</Link>
+              <Button
+                asChild
+                size="lg"
+                className="rounded-full bg-red-600 hover:bg-red-700 shadow-red-700/40 shadow-md hover:shadow-lg text-white font-semibold transition-all duration-500"
+              >
+                <Link to="/booking">Book Now</Link>
               </Button>
             </div>
 
-            {/* Mobile Menu Toggle */}
+            {/* Mobile Menu Button */}
             <button
-              className="md:hidden p-2 rounded-lg hover:bg-white/20 transition-colors"
+              className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle menu"
+              aria-label="Toggle Menu"
             >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
             </button>
           </div>
+        </div>
 
-          {/* Mobile Navigation */}
-          {isMenuOpen && (
-            <div className="md:hidden py-4 border-t border-white/20 bg-secondary text-white">
-              <nav className="flex flex-col space-y-4">
-                {navItems.map((item) => (
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-black/95 backdrop-blur-xl border-t border-red-600/30 text-white shadow-lg">
+            <nav className="flex flex-col p-5 space-y-5 animate-slide-in-down">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className={`text-lg font-medium tracking-wide ${
+                    isActive(item.path)
+                      ? "text-red-500"
+                      : "text-white/80 hover:text-white"
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
+
+              {/* Auth */}
+              {!user ? (
+                <>
                   <Link
-                    key={item.name}
-                    to={item.path}
-                    aria-current={isActive(item.path) ? "page" : undefined}
-                    className={`nav-link py-2 ${
-                      isActive(item.path)
-                        ? "text-white font-semibold border-b border-white"
-                        : "text-white/80 hover:text-white font-semibold"
-                    }`}
+                    to="/login"
+                    className="text-white/80 hover:text-white"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    {item.name}
+                    Login
                   </Link>
-                ))}
-
-                {/* Auth Links (mobile) */}
-                {!user ? (
-                  <>
-                    <Link
-                      to="/login"
-                      className="text-white/80 hover:text-white font-semibold transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      to="/register"
-                      className="text-white/80 hover:text-white font-semibold transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Register
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      to="/profile"
-                      className="text-white/80 hover:text-white font-semibold transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Hi, {displayName}
-                    </Link>
-                    <button
-                      onClick={() => {
-                        handleLogout();
-                        setIsMenuOpen(false);
-                      }}
-                      className="text-white/80 hover:text-white font-semibold transition-colors text-left"
-                    >
-                      Logout
-                    </button>
-                  </>
-                )}
-
-                {/* Mobile CTA inside menu */}
-                <Button asChild size="lg" variant="primary" className="mt-4 w-full">
-                  <Link to="/booking" onClick={() => setIsMenuOpen(false)}>
-                    Book Your Ride
+                  <Link
+                    to="/register"
+                    className="text-white/80 hover:text-white"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Register
                   </Link>
-                </Button>
-              </nav>
-            </div>
-          )}
-        </div>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/profile"
+                    className="text-white/80 hover:text-white"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Hi, {displayName}
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
+                    className="text-white/70 hover:text-red-500 font-semibold text-left"
+                  >
+                    Logout
+                  </button>
+                </>
+              )}
+
+              {/* Mobile CTA */}
+              <Button
+                asChild
+                size="lg"
+                className="mt-4 w-full rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold shadow-md hover:shadow-red-600/40 transition"
+              >
+                <Link to="/booking" onClick={() => setIsMenuOpen(false)}>
+                  Book a Ride
+                </Link>
+              </Button>
+            </nav>
+          </div>
+        )}
       </header>
 
-      {/* Floating CTA (mobile only) */}
+      {/* Floating Mobile CTA */}
       <div className="md:hidden fixed bottom-6 right-6 z-50">
-        <Button asChild size="lg" variant="primary" className="shadow-floating rounded-full">
-          <Link to="/booking">Book Now</Link>
+        <Button
+          asChild
+          size="lg"
+          className="rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-700/30 hover:shadow-red-600/40 transition-transform hover:scale-105"
+        >
+          <Link to="/booking">🚗</Link>
         </Button>
       </div>
     </>
