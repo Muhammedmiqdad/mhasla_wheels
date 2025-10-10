@@ -19,7 +19,6 @@ export default function AdminFleet() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  // Modal / Form
   const [showForm, setShowForm] = useState(false);
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null);
   const [formData, setFormData] = useState({
@@ -29,7 +28,7 @@ export default function AdminFleet() {
     per_km_rate: "",
     base_rate: "",
     image_url: "",
-    availability: true, // ✅ default true
+    availability: true,
   });
 
   // ✅ Protect route
@@ -73,7 +72,6 @@ export default function AdminFleet() {
     }));
   };
 
-  // ✅ Save vehicle (Add / Update)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const method = editVehicle ? "PUT" : "POST";
@@ -81,7 +79,6 @@ export default function AdminFleet() {
       ? "/.netlify/functions/update-vehicle"
       : "/.netlify/functions/create-vehicle";
 
-    // ✅ Clean numeric fields
     const cleanPayload: any = {
       ...formData,
       id: editVehicle?.id,
@@ -122,7 +119,6 @@ export default function AdminFleet() {
     }
   };
 
-  // ✅ Toggle availability inline
   const toggleAvailability = async (id: string, newValue: boolean) => {
     try {
       const res = await fetch("/.netlify/functions/update-vehicle", {
@@ -136,7 +132,6 @@ export default function AdminFleet() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Failed to update availability");
 
-      // update local state
       setVehicles((prev) =>
         prev.map((v) => (v.id === id ? { ...v, availability: newValue } : v))
       );
@@ -146,7 +141,6 @@ export default function AdminFleet() {
     }
   };
 
-  // ✅ Delete vehicle
   const deleteVehicle = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this vehicle?")) return;
     try {
@@ -168,34 +162,34 @@ export default function AdminFleet() {
   };
 
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-[#0A0A0A] text-white p-6">
       {/* Header */}
-      <div className="sticky top-0 bg-white shadow-md p-4 mb-4 flex flex-col md:flex-row items-center justify-between gap-3 z-10">
+      <div className="sticky top-0 bg-[#111] border-b border-gray-700 shadow-lg p-4 mb-6 flex flex-col md:flex-row items-center justify-between gap-3 z-10 rounded-xl">
         <div className="flex items-center gap-6">
-          <h1 className="text-xl font-bold text-yellow-600">Manage Fleet</h1>
+          <h1 className="text-2xl font-bold text-red-500">Manage Fleet</h1>
           <nav className="flex gap-3">
             <a
               href="/admin/bookings"
-              className="px-3 py-1 rounded font-medium hover:bg-gray-100"
+              className="px-3 py-1 rounded-md font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition"
             >
               Bookings
             </a>
             <a
               href="/admin/fleet"
-              className="px-3 py-1 rounded font-medium bg-yellow-100 text-yellow-700"
+              className="px-3 py-1 rounded-md font-medium bg-red-600 text-white hover:bg-red-700 transition"
             >
               Fleet
             </a>
           </nav>
         </div>
-        <Button onClick={() => setShowForm(true)} variant="book">
+        <Button onClick={() => setShowForm(true)} variant="primary">
           + Add Vehicle
         </Button>
       </div>
 
-      {/* Messages */}
+      {/* Message */}
       {message && (
-        <div className="mb-4 p-3 rounded bg-yellow-100 border-l-4 border-yellow-500 text-sm">
+        <div className="mb-4 p-3 rounded bg-red-500/10 border-l-4 border-red-600 text-sm text-gray-200">
           {message}
         </div>
       )}
@@ -204,23 +198,23 @@ export default function AdminFleet() {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div className="overflow-x-auto bg-white shadow rounded-lg">
+        <div className="overflow-x-auto bg-[#111] border border-gray-800 rounded-xl shadow-lg">
           <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className="bg-yellow-50 text-left">
-                <th className="p-3 border">Image</th>
-                <th className="p-3 border">Name</th>
-                <th className="p-3 border">Type</th>
-                <th className="p-3 border">Capacity</th>
-                <th className="p-3 border">Rates</th>
-                <th className="p-3 border">Available</th>
-                <th className="p-3 border">Actions</th>
+              <tr className="bg-[#1A1A1A] text-gray-300">
+                <th className="p-3 border-b border-gray-700">Image</th>
+                <th className="p-3 border-b border-gray-700">Name</th>
+                <th className="p-3 border-b border-gray-700">Type</th>
+                <th className="p-3 border-b border-gray-700">Capacity</th>
+                <th className="p-3 border-b border-gray-700">Rates</th>
+                <th className="p-3 border-b border-gray-700">Available</th>
+                <th className="p-3 border-b border-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody>
               {vehicles.map((v) => (
-                <tr key={v.id} className="hover:bg-gray-50">
-                  <td className="p-3 border">
+                <tr key={v.id} className="hover:bg-[#1E1E1E] transition">
+                  <td className="p-3 border-b border-gray-800">
                     {v.image_url ? (
                       <img
                         src={v.image_url}
@@ -228,21 +222,26 @@ export default function AdminFleet() {
                         className="w-12 h-12 object-contain rounded"
                       />
                     ) : (
-                      "-"
+                      <span className="text-gray-500">-</span>
                     )}
                   </td>
-                  <td className="p-3 border font-medium">{v.name}</td>
-                  <td className="p-3 border">{v.type || "-"}</td>
-                  <td className="p-3 border">{v.capacity || "-"}</td>
-                  <td className="p-3 border">
+                  <td className="p-3 border-b border-gray-800 font-medium text-white">
+                    {v.name}
+                  </td>
+                  <td className="p-3 border-b border-gray-800 text-gray-400">
+                    {v.type || "-"}
+                  </td>
+                  <td className="p-3 border-b border-gray-800 text-gray-400">
+                    {v.capacity || "-"}
+                  </td>
+                  <td className="p-3 border-b border-gray-800 text-gray-400">
                     {v.per_km_rate
                       ? `₹${v.per_km_rate}/km`
                       : v.base_rate
                       ? `₹${v.base_rate}`
                       : "-"}
                   </td>
-                  {/* ✅ Toggle availability inline */}
-                  <td className="p-3 border">
+                  <td className="p-3 border-b border-gray-800">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="checkbox"
@@ -254,7 +253,7 @@ export default function AdminFleet() {
                       />
                       <span
                         className={`w-10 h-5 flex items-center rounded-full p-1 transition-colors ${
-                          v.availability ? "bg-green-500" : "bg-gray-300"
+                          v.availability ? "bg-green-600" : "bg-gray-600"
                         }`}
                       >
                         <span
@@ -265,7 +264,7 @@ export default function AdminFleet() {
                       </span>
                     </label>
                   </td>
-                  <td className="p-3 border flex gap-2">
+                  <td className="p-3 border-b border-gray-800 flex gap-2">
                     <Button
                       size="sm"
                       variant="outline"
@@ -300,11 +299,11 @@ export default function AdminFleet() {
         </div>
       )}
 
-      {/* Add/Edit Form Modal */}
+      {/* Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
-            <h2 className="text-lg font-bold mb-4 text-yellow-600">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-[#111] border border-gray-800 rounded-xl shadow-xl p-6 max-w-md w-full text-gray-200">
+            <h2 className="text-lg font-bold mb-4 text-red-500">
               {editVehicle ? "Edit Vehicle" : "Add Vehicle"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-3">
@@ -313,7 +312,7 @@ export default function AdminFleet() {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Vehicle Name"
-                className="p-2 border rounded w-full"
+                className="p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
                 required
               />
               <input
@@ -321,7 +320,7 @@ export default function AdminFleet() {
                 value={formData.type}
                 onChange={handleChange}
                 placeholder="Type (SUV, Sedan, etc.)"
-                className="p-2 border rounded w-full"
+                className="p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
               />
               <input
                 type="number"
@@ -329,7 +328,7 @@ export default function AdminFleet() {
                 value={formData.capacity}
                 onChange={handleChange}
                 placeholder="Capacity (seats)"
-                className="p-2 border rounded w-full"
+                className="p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
               />
               <input
                 type="number"
@@ -337,7 +336,7 @@ export default function AdminFleet() {
                 value={formData.per_km_rate}
                 onChange={handleChange}
                 placeholder="Rate per km"
-                className="p-2 border rounded w-full"
+                className="p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
               />
               <input
                 type="number"
@@ -345,18 +344,17 @@ export default function AdminFleet() {
                 value={formData.base_rate}
                 onChange={handleChange}
                 placeholder="Base rate"
-                className="p-2 border rounded w-full"
+                className="p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
               />
               <input
                 name="image_url"
                 value={formData.image_url}
                 onChange={handleChange}
                 placeholder="Image URL"
-                className="p-2 border rounded w-full"
+                className="p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
               />
 
-              {/* ✅ Availability Toggle */}
-              <label className="flex items-center gap-2">
+              <label className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
                   name="availability"
@@ -377,7 +375,7 @@ export default function AdminFleet() {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" variant="book">
+                <Button type="submit" variant="primary">
                   {editVehicle ? "Update" : "Add"}
                 </Button>
               </div>

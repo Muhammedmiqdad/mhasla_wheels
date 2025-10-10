@@ -1,5 +1,6 @@
 // src/pages/admin/AdminLogin.tsx
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("");
@@ -35,42 +36,62 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-black via-[#111] to-[#1A1A1A] px-4">
       <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-lg rounded-lg p-6 w-full max-w-sm"
+        className="bg-card text-card-foreground shadow-card border border-border rounded-2xl p-8 w-full max-w-sm"
       >
-        <h1 className="text-xl font-bold mb-4 text-center text-yellow-600">
+        {/* Title */}
+        <h1 className="text-3xl font-bold mb-6 text-center text-white">
           Admin Login
         </h1>
 
+        {/* Error */}
         {error && (
-          <p className="mb-3 text-red-500 text-sm text-center">{error}</p>
+          <p className="mb-4 text-red-500 bg-red-100/10 border border-red-600 rounded p-2 text-center text-sm">
+            {error}
+          </p>
         )}
 
-        <input
-          type="text"
-          placeholder="Username"
-          className="w-full p-2 border rounded mb-3"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+        {/* Username */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1 text-gray-300">
+            Username
+          </label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            className="w-full px-4 py-2 rounded-md bg-[#111] text-white border border-gray-600 focus:ring-2 focus:ring-red-600 outline-none transition"
+            placeholder="Enter username"
+          />
+        </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-2 border rounded mb-4"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        {/* Password */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium mb-1 text-gray-300">
+            Password
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="w-full px-4 py-2 rounded-md bg-[#111] text-white border border-gray-600 focus:ring-2 focus:ring-red-600 outline-none transition"
+            placeholder="Enter password"
+          />
+        </div>
 
-        <button
+        {/* Submit */}
+        <Button
           type="submit"
           disabled={loading}
-          className="w-full bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600 transition"
+          variant="primary"
+          className="w-full py-2 text-lg font-semibold rounded-full"
         >
           {loading ? "Logging in..." : "Login"}
-        </button>
+        </Button>
       </form>
     </div>
   );

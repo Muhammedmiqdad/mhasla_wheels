@@ -48,7 +48,6 @@ const Register = () => {
         return;
       }
 
-      // ✅ Success flow
       toast.success("Please confirm your email", {
         description: "Check your inbox for the confirmation link.",
       });
@@ -63,7 +62,6 @@ const Register = () => {
     }
   };
 
-  // 🔑 Social Registration/Login
   const handleSocialRegister = async (provider: "google" | "facebook") => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -81,56 +79,58 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-yellow-400 to-yellow-600 px-4">
-      <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-black via-[#111] to-[#1A1A1A] px-4">
+      <div className="bg-card shadow-card rounded-2xl p-8 w-full max-w-md text-card-foreground border border-border">
+        <h1 className="text-3xl font-bold text-center mb-6 text-white">
           Create an Account
         </h1>
 
-        {/* Default Registration (Email + Password) */}
-        <form onSubmit={handleRegister} className="space-y-4">
-          {/* Full Name */}
+        {/* Email + Password Form */}
+        <form onSubmit={handleRegister} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium mb-1">Full Name</label>
+            <label className="block text-sm font-medium mb-1 text-gray-300">
+              Full Name
+            </label>
             <input
               type="text"
               value={name}
               autoComplete="name"
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-yellow-500"
+              className="w-full px-4 py-2 rounded-md bg-[#111] text-white border border-gray-600 focus:ring-2 focus:ring-red-600 outline-none transition"
             />
           </div>
 
-          {/* Email */}
           <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
+            <label className="block text-sm font-medium mb-1 text-gray-300">
+              Email
+            </label>
             <input
               type="email"
               value={email}
               autoComplete="email"
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-yellow-500"
+              className="w-full px-4 py-2 rounded-md bg-[#111] text-white border border-gray-600 focus:ring-2 focus:ring-red-600 outline-none transition"
             />
           </div>
 
-          {/* Password */}
           <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
+            <label className="block text-sm font-medium mb-1 text-gray-300">
+              Password
+            </label>
             <input
               type="password"
               value={password}
               autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-yellow-500"
+              className="w-full px-4 py-2 rounded-md bg-[#111] text-white border border-gray-600 focus:ring-2 focus:ring-red-600 outline-none transition"
             />
           </div>
 
-          {/* Confirm Password */}
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm font-medium mb-1 text-gray-300">
               Confirm Password
             </label>
             <input
@@ -139,14 +139,15 @@ const Register = () => {
               autoComplete="new-password"
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-yellow-500"
+              className="w-full px-4 py-2 rounded-md bg-[#111] text-white border border-gray-600 focus:ring-2 focus:ring-red-600 outline-none transition"
             />
           </div>
 
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-red-600 hover:bg-red-700 text-white rounded-full py-2 transition"
+            variant="primary"
+            className="w-full py-2 text-lg font-semibold rounded-full"
           >
             {loading ? "Registering..." : "Register"}
           </Button>
@@ -154,41 +155,48 @@ const Register = () => {
 
         {/* Divider */}
         <div className="my-6 flex items-center">
-          <div className="flex-grow h-px bg-gray-300"></div>
+          <div className="flex-grow h-px bg-gray-700"></div>
           <span className="mx-3 text-gray-400 text-sm">or</span>
-          <div className="flex-grow h-px bg-gray-300"></div>
+          <div className="flex-grow h-px bg-gray-700"></div>
         </div>
 
-        {/* Social Registration SECOND */}
+        {/* Social Login */}
         <div className="space-y-3">
           <Button
             type="button"
             onClick={() => handleSocialRegister("google")}
-            className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-50"
+            variant="secondaryBtn"
+            className="w-full flex items-center justify-center gap-2 py-2"
           >
             <FaGoogle className="text-red-500" /> Continue with Google
           </Button>
           <Button
             type="button"
             onClick={() => handleSocialRegister("facebook")}
-            className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-50"
+            variant="secondaryBtn"
+            className="w-full flex items-center justify-center gap-2 py-2"
           >
             <FaFacebook className="text-blue-600" /> Continue with Facebook
           </Button>
           <Button
             type="button"
             onClick={() =>
-              toast.info("⚠️ Instagram OAuth requires custom setup in Supabase")
+              toast.info("⚠️ Instagram OAuth requires setup in Supabase Dashboard.")
             }
-            className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-50"
+            variant="secondaryBtn"
+            className="w-full flex items-center justify-center gap-2 py-2"
           >
             <FaInstagram className="text-pink-500" /> Continue with Instagram
           </Button>
         </div>
 
-        <p className="text-sm text-center mt-4 text-gray-600">
+        {/* Login Link */}
+        <p className="text-sm text-center mt-6 text-gray-400">
           Already have an account?{" "}
-          <Link to="/login" className="text-yellow-600 hover:underline">
+          <Link
+            to="/login"
+            className="text-red-500 hover:text-red-400 font-semibold"
+          >
             Login
           </Link>
         </p>

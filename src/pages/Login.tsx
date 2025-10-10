@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@supabase/supabase-js";
 import { FaGoogle, FaFacebook, FaInstagram } from "react-icons/fa";
 
-// ⚡ create a client for resend calls + OAuth
+// Supabase client for resend & OAuth
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL!,
   import.meta.env.VITE_SUPABASE_ANON_KEY!
@@ -23,7 +23,7 @@ const Login = () => {
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
   const [resendStatus, setResendStatus] = useState<string | null>(null);
 
-  // 👀 Redirect if already logged in
+  // Redirect if already logged in
   useEffect(() => {
     if (user) {
       if (!user.user_metadata?.name) {
@@ -42,7 +42,6 @@ const Login = () => {
 
     try {
       const { error } = await login(email, password);
-
       if (error) {
         if (error.includes("Email not confirmed")) {
           setNeedsConfirmation(true);
@@ -52,7 +51,6 @@ const Login = () => {
         }
         return;
       }
-
       await refreshUser();
     } catch (err: any) {
       setError(err.message || "Login failed");
@@ -78,7 +76,7 @@ const Login = () => {
     }
   };
 
-  // 🔑 Social Login
+  // Social Login
   const handleSocialLogin = async (provider: "google" | "facebook") => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -94,48 +92,55 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-yellow-400 to-yellow-600 px-4">
-      <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-black via-[#111] to-[#1A1A1A] px-4">
+      <div className="bg-card shadow-card rounded-2xl p-8 w-full max-w-md text-card-foreground border border-border">
+        {/* Header */}
+        <h1 className="text-3xl font-bold text-center mb-6 text-white">
           Login to Mhasla Wheels
         </h1>
 
+        {/* Error */}
         {error && (
-          <div className="mb-4 text-sm text-red-600 bg-red-100 p-2 rounded">
+          <div className="mb-4 text-sm text-red-500 bg-red-100/10 border border-red-600 p-2 rounded text-center">
             {error}
           </div>
         )}
 
-        {/* Email + Password Form FIRST */}
-        <form onSubmit={handleLogin} className="space-y-4">
+        {/* Email & Password Form */}
+        <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
+            <label className="block text-sm font-medium mb-1 text-gray-300">
+              Email
+            </label>
             <input
               type="email"
               value={email}
               autoComplete="off"
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-yellow-500"
+              className="w-full px-4 py-2 rounded-md bg-[#111] text-white border border-gray-600 focus:ring-2 focus:ring-red-600 outline-none transition"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
+            <label className="block text-sm font-medium mb-1 text-gray-300">
+              Password
+            </label>
             <input
               type="password"
               value={password}
               autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-yellow-500"
+              className="w-full px-4 py-2 rounded-md bg-[#111] text-white border border-gray-600 focus:ring-2 focus:ring-red-600 outline-none transition"
             />
           </div>
 
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-red-600 hover:bg-red-700 text-white rounded-full py-2 transition"
+            variant="primary"
+            className="w-full py-2 text-lg font-semibold rounded-full"
           >
             {loading ? "Logging in..." : "Login"}
           </Button>
@@ -146,54 +151,61 @@ const Login = () => {
           <div className="mt-4 text-center">
             <Button
               onClick={handleResend}
-              className="w-full bg-yellow-500 hover:bg-yellow-600 text-white rounded-full py-2 transition"
+              variant="secondaryBtn"
+              className="w-full py-2 text-lg"
             >
               Resend Confirmation Email
             </Button>
             {resendStatus && (
-              <p className="mt-2 text-sm text-gray-700">{resendStatus}</p>
+              <p className="mt-2 text-sm text-gray-400">{resendStatus}</p>
             )}
           </div>
         )}
 
         {/* Divider */}
         <div className="my-6 flex items-center">
-          <div className="flex-grow h-px bg-gray-300"></div>
+          <div className="flex-grow h-px bg-gray-700"></div>
           <span className="mx-3 text-gray-400 text-sm">or</span>
-          <div className="flex-grow h-px bg-gray-300"></div>
+          <div className="flex-grow h-px bg-gray-700"></div>
         </div>
 
-        {/* Social Login SECOND */}
+        {/* Social Login */}
         <div className="space-y-3">
           <Button
             type="button"
             onClick={() => handleSocialLogin("google")}
-            className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-50"
+            variant="secondaryBtn"
+            className="w-full flex items-center justify-center gap-2 py-2"
           >
             <FaGoogle className="text-red-500" /> Continue with Google
           </Button>
           <Button
             type="button"
             onClick={() => handleSocialLogin("facebook")}
-            className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-50"
+            variant="secondaryBtn"
+            className="w-full flex items-center justify-center gap-2 py-2"
           >
             <FaFacebook className="text-blue-600" /> Continue with Facebook
           </Button>
           <Button
             type="button"
             onClick={() =>
-              alert("⚠️ Instagram OAuth requires custom setup in Supabase")
+              alert("⚠️ Instagram OAuth requires setup in Supabase Dashboard.")
             }
-            className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-50"
+            variant="secondaryBtn"
+            className="w-full flex items-center justify-center gap-2 py-2"
           >
             <FaInstagram className="text-pink-500" /> Continue with Instagram
           </Button>
         </div>
 
         {/* Register Link */}
-        <p className="text-sm text-center mt-4 text-gray-600">
+        <p className="text-sm text-center mt-6 text-gray-400">
           Don’t have an account?{" "}
-          <Link to="/register" className="text-yellow-600 hover:underline">
+          <Link
+            to="/register"
+            className="text-red-500 hover:text-red-400 font-semibold"
+          >
             Register
           </Link>
         </p>

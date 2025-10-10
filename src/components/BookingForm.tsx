@@ -12,11 +12,11 @@ type Vehicle = {
   per_km_rate?: number;
   base_rate?: number;
   image_url?: string;
-  availability?: boolean; // ✅ include availability
+  availability?: boolean;
 };
 
 export default function BookingForm() {
-  const { user } = useAuth(); // ✅ get logged-in user
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     from: "",
     to: "",
@@ -26,9 +26,9 @@ export default function BookingForm() {
     return_date: "",
     return_time: "",
     coupon_code: "",
-    custom_journey_details: "", // ✅ NEW FIELD
-    custom_rate: "", // ✅ NEW FIELD
-    custom_unit: "", // ✅ NEW FIELD
+    custom_journey_details: "",
+    custom_rate: "",
+    custom_unit: "",
     name: user?.user_metadata?.name || "",
     phone: user?.user_metadata?.phone || "",
     email: user?.email || "",
@@ -41,7 +41,6 @@ export default function BookingForm() {
   const [status, setStatus] = useState<null | string>(null);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Fetch vehicles
   useEffect(() => {
     async function fetchVehicles() {
       setLoadingVehicles(true);
@@ -50,8 +49,6 @@ export default function BookingForm() {
         const json = await res.json();
         if (json.ok) {
           setVehicles(json.vehicles || []);
-        } else {
-          console.error("Vehicle fetch failed:", json.message);
         }
       } catch (err) {
         console.error("Error fetching vehicles:", err);
@@ -62,20 +59,14 @@ export default function BookingForm() {
     fetchVehicles();
   }, []);
 
-  // ✅ Handle input change
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
-  ) => {
-    setFormData((s) => ({ ...s, [e.target.name]: e.target.value }));
-  };
+  ) => setFormData((s) => ({ ...s, [e.target.name]: e.target.value }));
 
-  // ✅ Submit booking
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // 🔒 Require login
     if (!user) {
       setStatus("⚠️ Please log in to book a ride.");
       return;
@@ -90,7 +81,7 @@ export default function BookingForm() {
         pickup_location: formData.from,
         drop_location: formData.to,
         vehicle_id: selectedVehicle?.id || null,
-        customer_id: user.id, // ✅ link booking to user
+        customer_id: user.id,
       };
 
       const res = await fetch("/.netlify/functions/create-booking", {
@@ -100,7 +91,6 @@ export default function BookingForm() {
       });
 
       const result = await res.json();
-
       if (!res.ok) {
         setStatus(result?.message || "❌ Submission failed");
         setLoading(false);
@@ -108,11 +98,8 @@ export default function BookingForm() {
       }
 
       setStatus("✅ " + (result.message || "Booking submitted successfully!"));
-
-      // ✅ Save last booking locally (backup)
       localStorage.setItem("lastBooking", JSON.stringify(result.booking));
 
-      // ✅ Redirect to Thank You page with booking_code
       setTimeout(() => {
         if (result.booking?.booking_code) {
           window.location.href = `/thank-you?code=${result.booking.booking_code}`;
@@ -131,37 +118,26 @@ export default function BookingForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 p-6 bg-white shadow-xl rounded-xl max-w-3xl mx-auto"
+      className="space-y-6 p-6 bg-[#0A0A0A] text-white shadow-xl rounded-2xl max-w-3xl mx-auto border border-gray-800"
     >
       {/* From & To */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <label className="relative">
-          <input
-            name="from"
-            value={formData.from}
-            onChange={handleChange}
-            placeholder=" "
-            required
-            className="peer w-full p-3 border rounded"
-          />
-          <span className="absolute left-3 top-1 text-sm text-gray-500 peer-placeholder-shown:top-3 transition-all">
-            From
-          </span>
-        </label>
-
-        <label className="relative">
-          <input
-            name="to"
-            value={formData.to}
-            onChange={handleChange}
-            placeholder=" "
-            required
-            className="peer w-full p-3 border rounded"
-          />
-          <span className="absolute left-3 top-1 text-sm text-gray-500 peer-placeholder-shown:top-3 transition-all">
-            To
-          </span>
-        </label>
+        <input
+          name="from"
+          value={formData.from}
+          onChange={handleChange}
+          placeholder="Pickup Location"
+          required
+          className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 outline-none"
+        />
+        <input
+          name="to"
+          value={formData.to}
+          onChange={handleChange}
+          placeholder="Drop Location"
+          required
+          className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 outline-none"
+        />
       </div>
 
       {/* Journey Type */}
@@ -170,7 +146,7 @@ export default function BookingForm() {
           { key: "one_way", label: "One Way" },
           { key: "round_trip", label: "Round Trip" },
           { key: "shared", label: "Shared / Seat" },
-          { key: "customize", label: "Customize" }, // ✅ NEW
+          { key: "customize", label: "Customize" },
         ].map((opt) => (
           <button
             type="button"
@@ -178,10 +154,10 @@ export default function BookingForm() {
             onClick={() =>
               setFormData((s) => ({ ...s, journey_type: opt.key }))
             }
-            className={`px-4 py-2 border rounded-lg transition ${
+            className={`px-4 py-2 rounded-lg border transition-all ${
               formData.journey_type === opt.key
-                ? "bg-yellow-400 text-white border-yellow-500"
-                : "bg-white hover:bg-gray-50"
+                ? "bg-red-600 text-white border-red-600"
+                : "bg-[#111] text-gray-300 border-gray-700 hover:bg-[#1A1A1A]"
             }`}
           >
             {opt.label}
@@ -189,7 +165,7 @@ export default function BookingForm() {
         ))}
       </div>
 
-      {/* Custom Journey Fields */}
+      {/* Custom Journey */}
       {formData.journey_type === "customize" && (
         <div className="space-y-3 mt-3">
           <textarea
@@ -197,26 +173,24 @@ export default function BookingForm() {
             value={formData.custom_journey_details}
             onChange={handleChange}
             placeholder="Describe your custom journey (e.g., multiple stops, special requirements)"
-            className="w-full p-3 border rounded"
+            className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 outline-none"
             rows={3}
             required
           />
-
           <input
             type="number"
             name="custom_rate"
             value={formData.custom_rate}
             onChange={handleChange}
             placeholder="Enter custom rate (₹)"
-            className="w-full p-3 border rounded"
+            className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 outline-none"
             required
           />
-
           <select
             name="custom_unit"
             value={formData.custom_unit}
             onChange={handleChange}
-            className="w-full p-3 border rounded"
+            className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-red-500 outline-none"
             required
           >
             <option value="">Select Unit</option>
@@ -228,26 +202,26 @@ export default function BookingForm() {
         </div>
       )}
 
-      {/* Vehicles (✅ Only available ones) */}
+      {/* Vehicles */}
       <div>
-        <h4 className="font-semibold mb-2">Available Vehicles</h4>
+        <h4 className="font-semibold mb-2 text-gray-300">Available Vehicles</h4>
         {loadingVehicles ? (
           <p className="text-sm text-gray-500">Loading vehicles...</p>
         ) : (
           <div className="space-y-3">
             {vehicles.filter((v) => v.availability !== false).length === 0 && (
-              <p className="text-sm text-gray-400">No vehicles available.</p>
+              <p className="text-sm text-gray-500">No vehicles available.</p>
             )}
             {vehicles
-              .filter((v) => v.availability !== false) // ✅ only available
+              .filter((v) => v.availability !== false)
               .map((v) => (
                 <div
                   key={v.id}
                   onClick={() => setSelectedVehicle(v)}
-                  className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition ${
+                  className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition border ${
                     selectedVehicle?.id === v.id
-                      ? "ring-2 ring-yellow-400 bg-yellow-50"
-                      : "hover:bg-gray-50"
+                      ? "bg-red-600/10 border-red-600"
+                      : "bg-[#111] border-gray-700 hover:border-red-500"
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -255,7 +229,7 @@ export default function BookingForm() {
                       <img
                         src={v.image_url}
                         alt={v.name}
-                        className="w-10 h-10 object-contain"
+                        className="w-10 h-10 object-contain rounded"
                       />
                     ) : (
                       <Car className="w-8 h-8 text-gray-500" />
@@ -268,7 +242,7 @@ export default function BookingForm() {
                       </div>
                     </div>
                   </div>
-                  <div className="font-semibold">
+                  <div className="font-semibold text-gray-200">
                     {v.per_km_rate
                       ? `₹${v.per_km_rate}/km`
                       : v.base_rate
@@ -283,27 +257,22 @@ export default function BookingForm() {
 
       {/* Coupon */}
       <div className="flex gap-2 items-center">
-        <div className="relative flex-1">
-          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400">
-            🏷️
-          </span>
-          <input
-            name="coupon_code"
-            value={formData.coupon_code}
-            onChange={handleChange}
-            placeholder="Enter coupon code (optional)"
-            className="w-full pl-8 p-2 border rounded"
-          />
-        </div>
+        <input
+          name="coupon_code"
+          value={formData.coupon_code}
+          onChange={handleChange}
+          placeholder="Enter coupon code (optional)"
+          className="flex-1 p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 outline-none"
+        />
         <button
           type="button"
-          className="px-4 py-2 rounded bg-yellow-400 text-white"
+          className="px-5 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition text-white font-medium"
         >
           Apply
         </button>
       </div>
 
-      {/* Contact Info (only if not logged in) */}
+      {/* Contact Info */}
       {!user && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <input
@@ -311,7 +280,7 @@ export default function BookingForm() {
             value={formData.name}
             onChange={handleChange}
             placeholder="Name"
-            className="p-2 border rounded"
+            className="p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400"
             required
           />
           <input
@@ -319,7 +288,7 @@ export default function BookingForm() {
             value={formData.phone}
             onChange={handleChange}
             placeholder="Phone"
-            className="p-2 border rounded"
+            className="p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400"
             required
           />
           <input
@@ -327,7 +296,7 @@ export default function BookingForm() {
             value={formData.email}
             onChange={handleChange}
             placeholder="Email"
-            className="p-2 border rounded"
+            className="p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400"
             required
           />
         </div>
@@ -337,38 +306,34 @@ export default function BookingForm() {
       <div className="flex flex-col sm:flex-row gap-3 sm:justify-between">
         <Button
           type="submit"
-          variant="book"
-          className="w-full sm:w-auto"
-          disabled={loading || !user} // ✅ Disable for guests
+          variant="primary"
+          className="w-full sm:w-auto rounded-full"
+          disabled={loading || !user}
         >
           {loading ? "Submitting..." : !user ? "Login to Book" : "Book Ride"}
         </Button>
         <Button
           type="button"
-          variant="blue"
+          variant="outline"
           onClick={() => (window.location.href = "/")}
-          className="w-full sm:w-auto"
+          className="w-full sm:w-auto rounded-full"
         >
           Cancel
         </Button>
       </div>
 
-      {/* Status message */}
-      {status && <p className="text-center text-sm mt-2">{status}</p>}
+      {/* Status */}
+      {status && (
+        <p className="text-center text-sm mt-2 text-gray-300">{status}</p>
+      )}
 
-      {/* Login Reminder */}
       {!user && (
-        <div className="mt-4 p-3 rounded-lg bg-red-100 flex items-center gap-2 text-sm">
-          <span role="img" aria-label="lock">
-            🔒
-          </span>
-          <p>
-            You can explore vehicles, but{" "}
-            <Link to="/login" className="text-red-600 underline font-medium">
-              login
-            </Link>{" "}
-            to complete your booking.
-          </p>
+        <div className="mt-4 p-3 rounded-lg bg-red-600/10 border border-red-600 flex items-center gap-2 text-sm text-gray-200">
+          🔒 You can explore vehicles, but{" "}
+          <Link to="/login" className="text-red-400 underline font-medium">
+            login
+          </Link>{" "}
+          to complete your booking.
         </div>
       )}
     </form>
