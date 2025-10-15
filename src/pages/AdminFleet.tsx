@@ -1,6 +1,7 @@
 // src/pages/admin/AdminFleet.tsx
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/supabaseClient";
 
 interface Vehicle {
   id: string;
@@ -18,8 +19,8 @@ export default function AdminFleet() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-
   const [showForm, setShowForm] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -72,6 +73,45 @@ export default function AdminFleet() {
     }));
   };
 
+  // 📸 Handle Image Upload to Supabase
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+
+      const fileExt = file.name.split(".").pop();
+      const fileName = `images/${Date.now()}-${Math.random()
+        .toString(36)
+        .substring(2)}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      // Upload file to Supabase
+      const { error: uploadError } = await supabase.storage
+        .from("vehicles")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data } = supabase.storage.from("vehicles").getPublicUrl(filePath);
+      const publicUrl = data.publicUrl;
+
+      setFormData((prev) => ({
+        ...prev,
+        image_url: publicUrl,
+      }));
+
+      setMessage("✅ Image uploaded successfully!");
+    } catch (error: any) {
+      console.error("Upload failed:", error);
+      setMessage("❌ Upload failed: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const method = editVehicle ? "PUT" : "POST";
@@ -104,19 +144,23 @@ export default function AdminFleet() {
       setMessage(editVehicle ? "✅ Vehicle updated!" : "✅ Vehicle added!");
       setShowForm(false);
       setEditVehicle(null);
-      setFormData({
-        name: "",
-        type: "",
-        capacity: "",
-        per_km_rate: "",
-        base_rate: "",
-        image_url: "",
-        availability: true,
-      });
+      resetForm();
       fetchVehicles();
     } catch (err: any) {
       setMessage("❌ " + err.message);
     }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      type: "",
+      capacity: "",
+      per_km_rate: "",
+      base_rate: "",
+      image_url: "",
+      availability: true,
+    });
   };
 
   const toggleAvailability = async (id: string, newValue: boolean) => {
@@ -219,7 +263,7 @@ export default function AdminFleet() {
                       <img
                         src={v.image_url}
                         alt={v.name}
-                        className="w-12 h-12 object-contain rounded"
+                        className="w-12 h-12 object-cover rounded-md"
                       />
                     ) : (
                       <span className="text-gray-500">-</span>
@@ -306,53 +350,100 @@ export default function AdminFleet() {
             <h2 className="text-lg font-bold mb-4 text-red-500">
               {editVehicle ? "Edit Vehicle" : "Add Vehicle"}
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <input
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Vehicle Name"
-                className="p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
-                required
-              />
-              <input
-                name="type"
-                value={formData.type}
-                onChange={handleChange}
-                placeholder="Type (SUV, Sedan, etc.)"
-                className="p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
-              />
-              <input
-                type="number"
-                name="capacity"
-                value={formData.capacity}
-                onChange={handleChange}
-                placeholder="Capacity (seats)"
-                className="p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
-              />
-              <input
-                type="number"
-                name="per_km_rate"
-                value={formData.per_km_rate}
-                onChange={handleChange}
-                placeholder="Rate per km"
-                className="p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
-              />
-              <input
-                type="number"
-                name="base_rate"
-                value={formData.base_rate}
-                onChange={handleChange}
-                placeholder="Base rate"
-                className="p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
-              />
-              <input
-                name="image_url"
-                value={formData.image_url}
-                onChange={handleChange}
-                placeholder="Image URL"
-                className="p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
-              />
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Labeled Inputs */}
+              <div>
+                <label className="text-sm font-semibold text-gray-300">
+                  Vehicle Name
+                </label>
+                <input
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="e.g., Sedan Premium"
+                  className="mt-1 p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-gray-300">
+                  Type
+                </label>
+                <input
+                  name="type"
+                  value={formData.type}
+                  onChange={handleChange}
+                  placeholder="SUV, Sedan, etc."
+                  className="mt-1 p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-gray-300">
+                  Capacity (seats)
+                </label>
+                <input
+                  type="number"
+                  name="capacity"
+                  value={formData.capacity}
+                  onChange={handleChange}
+                  placeholder="e.g., 4"
+                  className="mt-1 p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-gray-300">
+                  Rate per km
+                </label>
+                <input
+                  type="number"
+                  name="per_km_rate"
+                  value={formData.per_km_rate}
+                  onChange={handleChange}
+                  placeholder="₹ per km"
+                  className="mt-1 p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-gray-300">
+                  Base Rate
+                </label>
+                <input
+                  type="number"
+                  name="base_rate"
+                  value={formData.base_rate}
+                  onChange={handleChange}
+                  placeholder="₹ base fare"
+                  className="mt-1 p-2 bg-[#1A1A1A] border border-gray-700 rounded w-full text-white placeholder-gray-500"
+                />
+              </div>
+
+              {/* Upload Section */}
+              <div>
+                <label className="text-sm font-semibold text-gray-300 mb-2">
+                  Vehicle Image
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="block w-full text-sm text-gray-300 border border-gray-700 rounded cursor-pointer bg-[#1A1A1A] file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-700"
+                />
+                {uploading && (
+                  <p className="text-xs text-gray-400 mt-1">Uploading...</p>
+                )}
+                {formData.image_url && (
+                  <img
+                    src={formData.image_url}
+                    alt="Preview"
+                    className="mt-3 w-24 h-24 object-cover rounded-md border border-gray-700"
+                  />
+                )}
+              </div>
 
               <label className="flex items-center gap-2 text-sm">
                 <input
@@ -371,11 +462,16 @@ export default function AdminFleet() {
                   onClick={() => {
                     setShowForm(false);
                     setEditVehicle(null);
+                    resetForm();
                   }}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" variant="primary">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  disabled={uploading}
+                >
                   {editVehicle ? "Update" : "Add"}
                 </Button>
               </div>

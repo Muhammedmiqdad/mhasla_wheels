@@ -2,77 +2,59 @@ import { Car, Users, Fuel, Shield, Star } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BookingModal from "@/components/BookingModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/supabaseClient";
 
 const Fleet = () => {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const vehicles = [
-    {
-      name: "Sedan Premium",
-      type: "Car",
-      capacity: "4 Passengers",
-      features: ["AC", "GPS", "Music System", "Comfortable Seating"],
-      price: "₹12/km",
-      rating: 4.8,
-      description: "Perfect for business trips and comfortable city rides",
-    },
-    {
-      name: "SUV Deluxe",
-      type: "Car",
-      capacity: "7 Passengers",
-      features: ["AC", "GPS", "Extra Space", "Premium Interior"],
-      price: "₹18/km",
-      rating: 4.9,
-      description: "Ideal for family trips and group travel",
-    },
-    {
-      name: "Hatchback Economy",
-      type: "Car",
-      capacity: "4 Passengers",
-      features: ["AC", "GPS", "Fuel Efficient", "Easy Parking"],
-      price: "₹10/km",
-      rating: 4.7,
-      description: "Budget-friendly option for daily commutes",
-    },
-    {
-      name: "Sports Bike",
-      type: "Bike",
-      capacity: "2 Passengers",
-      features: ["Helmet", "Storage Box", "High Mileage", "Quick Navigation"],
-      price: "₹5/km",
-      rating: 4.6,
-      description: "Fast and efficient for solo or couple rides",
-    },
-    {
-      name: "Scooter Classic",
-      type: "Bike",
-      capacity: "2 Passengers",
-      features: ["Helmet", "Under-seat Storage", "Easy Handling", "Eco-friendly"],
-      price: "₹4/km",
-      rating: 4.5,
-      description: "Perfect for short distance city travel",
-    },
-    {
-      name: "Luxury Sedan",
-      type: "Car",
-      capacity: "4 Passengers",
-      features: ["Premium AC", "Leather Seats", "Entertainment System", "WiFi"],
-      price: "₹25/km",
-      rating: 5.0,
-      description: "Premium experience for special occasions",
-    },
-  ];
+  // 🧠 Fetch Vehicles + Realtime Sync
+  useEffect(() => {
+    let subscription: any;
 
+    const fetchVehicles = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("vehicles")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) console.error("Error fetching vehicles:", error);
+      else setVehicles(data || []);
+      setLoading(false);
+    };
+
+    fetchVehicles();
+
+    // ✅ Realtime subscription
+    subscription = supabase
+      .channel("public:vehicles")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "vehicles" },
+        (payload) => {
+          console.log("🔁 Fleet update:", payload);
+          fetchVehicles();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      if (subscription) supabase.removeChannel(subscription);
+    };
+  }, []);
+
+  // 🏷️ Dynamic Categories
   const categories = [
     { name: "All", count: vehicles.length },
     { name: "Cars", count: vehicles.filter((v) => v.type === "Car").length },
     { name: "Bikes", count: vehicles.filter((v) => v.type === "Bike").length },
   ];
 
-  const [selectedCategory, setSelectedCategory] = useState("All");
-
+  // 🚗 Filter vehicles by category
   const filteredVehicles =
     selectedCategory === "All"
       ? vehicles
@@ -97,7 +79,7 @@ const Fleet = () => {
       {/* Category Filter */}
       <section className="py-8 bg-secondary text-secondary-foreground">
         <div className="max-w-6xl mx-auto container-padding">
-          <div className="flex justify-center space-x-4">
+          <div className="flex justify-center space-x-4 flex-wrap gap-3">
             {categories.map((category) => (
               <button
                 key={category.name}
@@ -118,63 +100,95 @@ const Fleet = () => {
       {/* Fleet Grid */}
       <section className="section-padding bg-secondary text-secondary-foreground">
         <div className="max-w-6xl mx-auto container-padding">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredVehicles.map((vehicle, index) => (
-              <div key={index} className="fleet-card">
-                {/* Vehicle Image Placeholder */}
-                <div className="h-48 bg-primary text-primary-foreground rounded-t-xl flex items-center justify-center relative">
-                  <Car size={80} />
-                  <div className="absolute top-4 right-4 bg-background text-foreground px-2 py-1 rounded-full text-sm font-medium">
-                    {vehicle.type}
-                  </div>
-                </div>
-
-                {/* Vehicle Details */}
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-semibold">{vehicle.name}</h3>
-                    <div className="flex items-center">
-                      <Star
-                        size={16}
-                        className="text-yellow-400 fill-current"
+          {loading ? (
+            <p className="text-center text-gray-400 py-10">Loading vehicles...</p>
+          ) : filteredVehicles.length === 0 ? (
+            <p className="text-center text-gray-400 py-10">
+              No vehicles available in this category.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredVehicles.map((vehicle, index) => (
+                <div
+                  key={vehicle.id || index}
+                  className="fleet-card bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-2 transition-all duration-500"
+                >
+                  {/* Vehicle Image or Icon */}
+                  <div className="h-48 bg-primary text-primary-foreground flex items-center justify-center relative overflow-hidden">
+                    {vehicle.image_url ? (
+                      <img
+                        src={vehicle.image_url}
+                        alt={vehicle.name}
+                        className="w-full h-full object-cover opacity-90 hover:scale-105 transition-transform duration-700"
                       />
-                      <span className="text-sm font-medium ml-1">
-                        {vehicle.rating}
-                      </span>
+                    ) : (
+                      <Car size={80} />
+                    )}
+                    <div className="absolute top-4 right-4 bg-background/80 text-foreground px-2 py-1 rounded-full text-sm font-medium">
+                      {vehicle.type || "Car"}
                     </div>
                   </div>
 
-                  <p className="opacity-90 text-sm mb-4">
-                    {vehicle.description}
-                  </p>
-
-                  <div className="flex items-center mb-4">
-                    <Users size={16} className="mr-2" />
-                    <span className="text-sm">{vehicle.capacity}</span>
-                  </div>
-
-                  <div className="space-y-2 mb-6">
-                    {vehicle.features.map((feature, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-center text-sm opacity-90"
-                      >
-                        <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
-                        {feature}
+                  {/* Vehicle Info */}
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-xl font-semibold">{vehicle.name}</h3>
+                      <div className="flex items-center">
+                        <Star
+                          size={16}
+                          className="text-yellow-400 fill-current"
+                        />
+                        <span className="text-sm font-medium ml-1">4.8</span>
                       </div>
-                    ))}
-                  </div>
+                    </div>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold">{vehicle.price}</span>
-                    <Button asChild variant="book" size="sm">
-                      <a href="/booking">Book Now</a>
-                    </Button>
+                    <p className="opacity-90 text-sm mb-4">
+                      {vehicle.description ||
+                        "Premium, well-maintained ride for your journey."}
+                    </p>
+
+                    <div className="flex items-center mb-4">
+                      <Users size={16} className="mr-2" />
+                      <span className="text-sm">
+                        {vehicle.capacity
+                          ? `${vehicle.capacity} Passengers`
+                          : "Varies"}
+                      </span>
+                    </div>
+
+                    {/* Dynamic Feature Tags */}
+                    {vehicle.type && (
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        <span className="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                          {vehicle.type}
+                        </span>
+                        <span className="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                          AC
+                        </span>
+                        <span className="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                          GPS
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Price + CTA */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-bold">
+                        {vehicle.per_km_rate
+                          ? `₹${vehicle.per_km_rate}/km`
+                          : vehicle.base_rate
+                          ? `₹${vehicle.base_rate}`
+                          : "₹ —"}
+                      </span>
+                      <Button asChild variant="book" size="sm">
+                        <a href="/booking">Book Now</a>
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -189,7 +203,7 @@ const Fleet = () => {
               <div className="w-16 h-16 bg-primary-foreground text-primary rounded-full flex items-center justify-center mx-auto mb-2">
                 <Car size={32} />
               </div>
-              <div className="text-3xl font-bold">50+</div>
+              <div className="text-3xl font-bold">{vehicles.length}+</div>
               <div className="opacity-90">Total Vehicles</div>
             </div>
             <div>

@@ -31,11 +31,17 @@ const Header = () => {
     user?.user_metadata?.name ||
     (user?.email ? user.email.split("@")[0] : null);
 
-  // Detect scroll to add background blur / shadow
+  // Reusable link class
+  const navLinkClass = (path: string) =>
+    `relative text-sm font-semibold uppercase tracking-wide transition-all duration-300 ${
+      isActive(path)
+        ? "text-white after:content-[''] after:absolute after:w-full after:h-[2px] after:bg-red-500 after:left-0 after:-bottom-1"
+        : "text-white/70 hover:text-white hover:after:content-[''] hover:after:absolute hover:after:w-full hover:after:h-[2px] hover:after:bg-red-500 hover:after:left-0 hover:after:-bottom-1 hover:after:transition-all"
+    }`;
+
+  // Scroll effect for navbar background
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -69,15 +75,7 @@ const Header = () => {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8">
               {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className={`relative text-sm font-semibold uppercase tracking-wide transition-all duration-300 ${
-                    isActive(item.path)
-                      ? "text-white after:content-[''] after:absolute after:w-full after:h-[2px] after:bg-red-500 after:left-0 after:-bottom-1"
-                      : "text-white/70 hover:text-white hover:after:content-[''] hover:after:absolute hover:after:w-full hover:after:h-[2px] hover:after:bg-red-500 hover:after:left-0 hover:after:-bottom-1 hover:after:transition-all"
-                  }`}
-                >
+                <Link key={item.name} to={item.path} className={navLinkClass(item.path)}>
                   {item.name}
                 </Link>
               ))}
@@ -85,30 +83,21 @@ const Header = () => {
               {/* Auth Links */}
               {!user ? (
                 <>
-                  <Link
-                    to="/login"
-                    className={`text-white/80 hover:text-white font-semibold`}
-                  >
+                  <Link to="/login" className={navLinkClass("/login")}>
                     Login
                   </Link>
-                  <Link
-                    to="/register"
-                    className={`text-white/80 hover:text-white font-semibold`}
-                  >
+                  <Link to="/register" className={navLinkClass("/register")}>
                     Register
                   </Link>
                 </>
               ) : (
                 <>
-                  <Link
-                    to="/profile"
-                    className="text-white/80 hover:text-white font-semibold"
-                  >
+                  <Link to="/profile" className={navLinkClass("/profile")}>
                     Hi, {displayName}
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="text-white/70 hover:text-red-400 font-semibold transition"
+                    className="text-white/70 hover:text-red-400 font-semibold uppercase tracking-wide transition-all"
                   >
                     Logout
                   </button>
@@ -127,7 +116,7 @@ const Header = () => {
               </Button>
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Toggle */}
             <button
               className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -146,7 +135,7 @@ const Header = () => {
                 <Link
                   key={item.name}
                   to={item.path}
-                  className={`text-lg font-medium tracking-wide ${
+                  className={`text-lg font-semibold uppercase tracking-wide ${
                     isActive(item.path)
                       ? "text-red-500"
                       : "text-white/80 hover:text-white"
@@ -157,19 +146,19 @@ const Header = () => {
                 </Link>
               ))}
 
-              {/* Auth */}
+              {/* Auth (Mobile) */}
               {!user ? (
                 <>
                   <Link
                     to="/login"
-                    className="text-white/80 hover:text-white"
+                    className="text-lg font-semibold uppercase tracking-wide text-white/80 hover:text-white"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Login
                   </Link>
                   <Link
                     to="/register"
-                    className="text-white/80 hover:text-white"
+                    className="text-lg font-semibold uppercase tracking-wide text-white/80 hover:text-white"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Register
@@ -179,7 +168,7 @@ const Header = () => {
                 <>
                   <Link
                     to="/profile"
-                    className="text-white/80 hover:text-white"
+                    className="text-lg font-semibold uppercase tracking-wide text-white/80 hover:text-white"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Hi, {displayName}
@@ -189,7 +178,7 @@ const Header = () => {
                       handleLogout();
                       setIsMenuOpen(false);
                     }}
-                    className="text-white/70 hover:text-red-500 font-semibold text-left"
+                    className="text-lg font-semibold uppercase tracking-wide text-white/70 hover:text-red-500 text-left"
                   >
                     Logout
                   </button>
