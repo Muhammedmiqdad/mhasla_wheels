@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+// ✅ Public pages
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Services from "./pages/Services";
@@ -22,6 +23,7 @@ import AuthCallback from "./pages/AuthCallback";
 import AdminLogin from "./pages/AdminLogin";
 import AdminBookings from "./pages/AdminBookings";
 import AdminFleet from "@/pages/AdminFleet";
+import AdminSettings from "@/pages/AdminSettings"; // ✅ Added new Admin Settings page
 
 // ✅ Customer pages
 import Login from "./pages/Login";
@@ -61,7 +63,7 @@ const App = () => {
         >
           <BrowserRouter>
             <Routes>
-              {/* Public routes */}
+              {/* 🌍 Public routes */}
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
               <Route path="/services" element={<Services />} />
@@ -71,19 +73,20 @@ const App = () => {
               <Route path="/thank-you" element={<ThankYou />} />
               <Route path="/feedback" element={<Feedback />} />
 
-              {/* Customer Auth routes */}
+              {/* 👤 Customer Auth routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/complete-profile" element={<CompleteProfile />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
 
-              {/* Admin routes */}
+              {/* 🛠️ Admin routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/bookings" element={<AdminBookings />} />
               <Route path="/admin/fleet" element={<AdminFleet />} />
+              <Route path="/admin/settings" element={<AdminSettings />} /> {/* ✅ Added */}
 
-              {/* Catch-all */}
+              {/* 🚫 Catch-all route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

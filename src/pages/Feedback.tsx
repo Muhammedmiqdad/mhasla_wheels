@@ -25,7 +25,6 @@ const Feedback = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       await fetch("/.netlify/functions/create-feedback", {
         method: "POST",
@@ -37,14 +36,8 @@ const Feedback = () => {
       fetchFeedbacks();
       fetchAverageRating();
 
-      // ✅ Show popup
       setShowPopup(true);
-
-      // ✅ Auto-close popup + redirect to home
-      setTimeout(() => {
-        setShowPopup(false);
-        window.location.href = "/";
-      }, 3000);
+      setTimeout(() => setShowPopup(false), 3000);
     } catch (err) {
       console.error("Error submitting feedback:", err);
     } finally {
@@ -65,7 +58,6 @@ const Feedback = () => {
       );
 
       if (!res.ok) throw new Error("Failed to fetch feedbacks");
-
       const data = await res.json();
       setFeedbacks(data);
     } catch (err) {
@@ -84,15 +76,11 @@ const Feedback = () => {
           },
         }
       );
-
       if (!res.ok) throw new Error("Failed to fetch ratings");
-
       const data = await res.json();
-
-      if (data && data.length > 0) {
+      if (data?.length) {
         const avg =
-          data.reduce((sum: number, f: any) => sum + f.rating, 0) /
-          data.length;
+          data.reduce((sum: number, f: any) => sum + f.rating, 0) / data.length;
         setAverageRating(parseFloat(avg.toFixed(1)));
       }
     } catch (err) {
@@ -108,20 +96,20 @@ const Feedback = () => {
   const loadMore = () => setVisibleCount((prev) => prev + 5);
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-[#121212] text-white">
       <Header onBookRide={() => setIsBookingModalOpen(true)} />
 
-      {/* ✅ Modern Popup */}
+      {/* Popup */}
       {showPopup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50 animate-fade-in">
-          <div className="bg-card text-card-foreground p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center transform animate-scale-in">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="bg-[#1e1e1e] border border-red-800/30 p-8 rounded-2xl shadow-[0_0_30px_rgba(255,0,0,0.2)] text-center animate-fade-in">
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
-                <CheckCircle2 size={36} className="text-primary-foreground" />
+              <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center">
+                <CheckCircle2 size={36} className="text-white" />
               </div>
             </div>
             <h2 className="text-2xl font-bold mb-2">Feedback Submitted</h2>
-            <p className="text-muted-foreground">
+            <p className="text-gray-400">
               Thank you for sharing your experience with us!
             </p>
           </div>
@@ -129,32 +117,32 @@ const Feedback = () => {
       )}
 
       {/* Hero Section */}
-      <section className="pt-24 section-padding bg-primary text-primary-foreground">
-        <div className="max-w-4xl mx-auto text-center container-padding">
-          <h1 className="text-responsive-xl font-bold mb-6 animate-fade-in-up">
-            Customer Feedback
+      <section className="pt-24 md:pt-32 pb-16 bg-[#181818] text-center border-b border-red-800/20">
+        <div className="max-w-4xl mx-auto px-6">
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
+            Customer <span className="text-red-500">Feedback</span>
           </h1>
-          <p className="text-responsive-md opacity-90 animate-fade-in-up">
-            Hear what our customers say and share your own experience with
-            Mhasla Wheels.
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+            Hear what our customers say and share your experience with us.
           </p>
-
           {averageRating !== null && (
             <div className="mt-6 flex justify-center items-center space-x-2">
               <Star size={24} className="text-yellow-400 fill-yellow-400" />
               <span className="text-xl font-semibold">{averageRating}</span>
-              <span className="opacity-80">({feedbacks.length} reviews)</span>
+              <span className="text-gray-400">
+                ({feedbacks.length} reviews)
+              </span>
             </div>
           )}
         </div>
       </section>
 
       {/* Feedback Form */}
-      <section className="section-padding">
-        <div className="max-w-2xl mx-auto container-padding">
+      <section className="py-16 bg-[#141414] border-b border-red-800/10">
+        <div className="max-w-3xl mx-auto px-6">
           <form
             onSubmit={handleSubmit}
-            className="space-y-4 p-6 bg-card border border-border rounded-xl shadow-card"
+            className="space-y-5 p-8 bg-[#1f1f1f] border border-red-800/30 rounded-2xl shadow-[0_0_25px_rgba(255,0,0,0.1)]"
           >
             <Input
               name="name"
@@ -162,10 +150,11 @@ const Feedback = () => {
               value={form.name}
               onChange={handleChange}
               required
+              className="bg-[#121212] border border-red-800/30 text-white placeholder-gray-500"
             />
 
             <div>
-              <label className="block text-sm font-medium mb-1 text-muted-foreground">
+              <label className="block text-sm font-medium mb-1 text-gray-400">
                 Your Rating
               </label>
               <div className="flex space-x-1 mb-2">
@@ -176,7 +165,7 @@ const Feedback = () => {
                     className={`cursor-pointer transition-colors ${
                       star <= form.rating
                         ? "text-yellow-400 fill-yellow-400"
-                        : "text-gray-400"
+                        : "text-gray-500"
                     }`}
                     onClick={() => setForm({ ...form, rating: star })}
                   />
@@ -190,12 +179,12 @@ const Feedback = () => {
               value={form.comments}
               onChange={handleChange}
               rows={5}
+              className="bg-[#121212] border border-red-800/30 text-white placeholder-gray-500"
             />
 
             <Button
               type="submit"
-              variant="book"
-              className="w-full py-3"
+              className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-full transition"
               disabled={loading}
             >
               {loading ? "Submitting..." : "Submit Feedback"}
@@ -205,27 +194,25 @@ const Feedback = () => {
       </section>
 
       {/* Feedback List */}
-      <section className="section-padding bg-muted">
-        <div className="max-w-6xl mx-auto container-padding">
-          <h2 className="text-responsive-lg font-bold text-center mb-12 text-foreground">
+      <section className="py-20 bg-[#121212]">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-12">
             What Our Customers Say
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {feedbacks.length === 0 ? (
-              <p className="text-center text-muted-foreground col-span-2">
+              <p className="text-center text-gray-400 col-span-2">
                 No feedback yet. Be the first to share your experience!
               </p>
             ) : (
               feedbacks.slice(0, visibleCount).map((fb) => (
                 <div
                   key={fb.id}
-                  className="bg-card border border-primary/30 rounded-xl shadow-card p-6 hover:shadow-lg transition-shadow"
+                  className="bg-[#1f1f1f] border border-red-800/30 rounded-2xl p-6 shadow-[0_0_20px_rgba(255,0,0,0.1)] hover:shadow-[0_0_25px_rgba(255,0,0,0.25)] transition-all"
                 >
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-card-foreground">
-                      {fb.name}
-                    </h3>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold">{fb.name}</h3>
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
                         <Star
@@ -234,15 +221,15 @@ const Feedback = () => {
                           className={`${
                             i < fb.rating
                               ? "text-yellow-400 fill-yellow-400"
-                              : "text-gray-300"
+                              : "text-gray-500"
                           }`}
                         />
                       ))}
                     </div>
                   </div>
-                  <p className="text-muted-foreground mb-3">{fb.comments}</p>
+                  <p className="text-gray-400 mb-3">{fb.comments}</p>
                   {fb.created_at && (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-gray-500">
                       {new Date(fb.created_at).toLocaleDateString()}
                     </p>
                   )}
@@ -253,7 +240,10 @@ const Feedback = () => {
 
           {visibleCount < feedbacks.length && (
             <div className="text-center mt-10">
-              <Button onClick={loadMore} variant="blue" className="px-8 py-3">
+              <Button
+                onClick={loadMore}
+                className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full"
+              >
                 Load More Reviews
               </Button>
             </div>

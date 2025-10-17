@@ -13,7 +13,7 @@ const Header = () => {
 
   const navItems = [
     { name: "Home", path: "/" },
-    { name: "About Us", path: "/about" },
+    { name: "About", path: "/about" },
     { name: "Services", path: "/services" },
     { name: "Fleet", path: "/fleet" },
     { name: "Feedback", path: "/feedback" },
@@ -31,20 +31,18 @@ const Header = () => {
     user?.user_metadata?.name ||
     (user?.email ? user.email.split("@")[0] : null);
 
-  // Reusable link class
-  const navLinkClass = (path: string) =>
-    `relative text-sm font-semibold uppercase tracking-wide transition-all duration-300 ${
-      isActive(path)
-        ? "text-white after:content-[''] after:absolute after:w-full after:h-[2px] after:bg-red-500 after:left-0 after:-bottom-1"
-        : "text-white/70 hover:text-white hover:after:content-[''] hover:after:absolute hover:after:w-full hover:after:h-[2px] hover:after:bg-red-500 hover:after:left-0 hover:after:-bottom-1 hover:after:transition-all"
-    }`;
-
-  // Scroll effect for navbar background
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const navLinkClass = (path: string) =>
+    `relative text-[15px] font-semibold uppercase tracking-wide leading-tight transition-all duration-300 ${
+      isActive(path)
+        ? "text-white after:content-[''] after:absolute after:w-full after:h-[2px] after:bg-red-500 after:left-0 after:-bottom-1"
+        : "text-white/70 hover:text-white hover:after:content-[''] hover:after:absolute hover:after:w-full hover:after:h-[2px] hover:after:bg-red-500 hover:after:left-0 hover:after:-bottom-1 hover:after:transition-all"
+    }`;
 
   return (
     <>
@@ -55,74 +53,83 @@ const Header = () => {
             : "bg-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto container-padding">
-          <div className="flex items-center justify-between h-16 md:h-20">
-            {/* Logo */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-24 md:h-28">
+            {/* Logo + Brand */}
             <Link
               to="/"
-              className="flex items-center gap-3 hover:opacity-90 transition-transform hover:scale-105"
+              className="flex items-center gap-4 hover:opacity-90 transition-transform hover:scale-105 translate-y-[1px]"
             >
-              <img
-                src="/splash-logo.png"
-                alt="Mhasla Wheels Logo"
-                className="h-10 w-auto rounded-full bg-white p-1 shadow-sm"
-              />
-              <span className="text-2xl md:text-3xl font-bold tracking-wide text-white">
-                Mhasla <span className="text-red-500">Wheels</span>
+              <div className="relative">
+                {/* Subtle red glow behind logo */}
+                <div className="absolute inset-0 bg-red-600/25 blur-2xl rounded-full -z-10" />
+                <img
+                  src="/splash-logo.png"
+                  alt="Mhasla Wheels Logo"
+                  className="h-14 w-14 md:h-16 md:w-16 object-contain rounded-full bg-white p-1.5 shadow-[0_0_15px_rgba(255,0,0,0.35)]"
+                />
+              </div>
+              <span className="text-2xl md:text-4xl font-extrabold tracking-wide text-white leading-none">
+                Mhasla <span className="text-white">Wheels</span>
               </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-8">
-              {navItems.map((item) => (
-                <Link key={item.name} to={item.path} className={navLinkClass(item.path)}>
-                  {item.name}
-                </Link>
-              ))}
-
-              {/* Auth Links */}
-              {!user ? (
-                <>
-                  <Link to="/login" className={navLinkClass("/login")}>
-                    Login
-                  </Link>
-                  <Link to="/register" className={navLinkClass("/register")}>
-                    Register
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link to="/profile" className={navLinkClass("/profile")}>
-                    Hi, {displayName}
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="text-white/70 hover:text-red-400 font-semibold uppercase tracking-wide transition-all"
+            <div className="hidden md:flex items-center gap-10">
+              <nav className="flex items-center gap-8">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.path}
+                    className={navLinkClass(item.path)}
                   >
-                    Logout
-                  </button>
-                </>
-              )}
-            </nav>
+                    {item.name}
+                  </Link>
+                ))}
 
-            {/* Desktop CTA */}
-            <div className="hidden md:block">
-              <Button
-                asChild
-                size="lg"
-                className="rounded-full bg-red-600 hover:bg-red-700 shadow-red-700/40 shadow-md hover:shadow-lg text-white font-semibold transition-all duration-500"
-              >
-                <Link to="/booking">Book Now</Link>
-              </Button>
+                {!user ? (
+                  <>
+                    <Link to="/login" className={navLinkClass("/login")}>
+                      Login
+                    </Link>
+                    <Link to="/register" className={navLinkClass("/register")}>
+                      Register
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/profile" className={navLinkClass("/profile")}>
+                      Hi, {displayName}
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="text-white/70 hover:text-red-400 font-semibold uppercase tracking-wide leading-tight transition-all"
+                    >
+                      Logout
+                    </button>
+                  </>
+                )}
+              </nav>
+
+              {/* Book Now Button */}
+              <div className="flex items-center">
+                <Button
+                  asChild
+                  size="lg"
+                  className="rounded-full bg-red-600 hover:bg-red-700 shadow-red-700/40 shadow-md hover:shadow-lg text-white font-semibold px-8 py-[10px] text-[15px] leading-none flex items-center transition-all duration-500"
+                >
+                  <Link to="/booking">Book Now</Link>
+                </Button>
+              </div>
             </div>
 
             {/* Mobile Menu Toggle */}
             <button
-              className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition"
+              className="md:hidden text-white p-3 rounded-lg hover:bg-white/10 transition"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle Menu"
             >
-              {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
+              {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
           </div>
         </div>
@@ -130,7 +137,7 @@ const Header = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden bg-black/95 backdrop-blur-xl border-t border-red-600/30 text-white shadow-lg">
-            <nav className="flex flex-col p-5 space-y-5 animate-slide-in-down">
+            <nav className="flex flex-col p-6 space-y-6 animate-slide-in-down">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
@@ -146,7 +153,6 @@ const Header = () => {
                 </Link>
               ))}
 
-              {/* Auth (Mobile) */}
               {!user ? (
                 <>
                   <Link
@@ -185,11 +191,10 @@ const Header = () => {
                 </>
               )}
 
-              {/* Mobile CTA */}
               <Button
                 asChild
                 size="lg"
-                className="mt-4 w-full rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold shadow-md hover:shadow-red-600/40 transition"
+                className="mt-6 w-full rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold shadow-md hover:shadow-red-600/40 transition"
               >
                 <Link to="/booking" onClick={() => setIsMenuOpen(false)}>
                   Book a Ride

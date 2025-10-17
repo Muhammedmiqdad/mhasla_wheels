@@ -33,16 +33,28 @@ export async function handler(event) {
     // ✅ Sanitize numeric fields
     ["capacity", "per_km_rate", "base_rate"].forEach((field) => {
       if (updates[field] === "" || updates[field] === undefined) {
-        updates[field] = null; // empty → NULL
+        updates[field] = null;
       } else if (!isNaN(updates[field])) {
-        updates[field] = Number(updates[field]); // string → number
+        updates[field] = Number(updates[field]);
       }
     });
 
-    // ✅ Ensure availability is boolean if provided
+    // ✅ Ensure availability is boolean
     if (updates.hasOwnProperty("availability")) {
       updates.availability = Boolean(updates.availability);
     }
+
+    // ✅ Properly handle image_url updates
+    if (updates.hasOwnProperty("image_url")) {
+      if (typeof updates.image_url === "string" && updates.image_url.trim() !== "") {
+        updates.image_url = updates.image_url.trim();
+      } else {
+        // If user explicitly clears image, set it to null
+        updates.image_url = null;
+      }
+    }
+
+    console.log("🔄 Updating vehicle:", id, updates);
 
     const { data, error } = await supabase
       .from("vehicles")
@@ -61,7 +73,7 @@ export async function handler(event) {
       }),
     };
   } catch (err) {
-    console.error("update-vehicle error:", err);
+    console.error("❌ update-vehicle error:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message }),

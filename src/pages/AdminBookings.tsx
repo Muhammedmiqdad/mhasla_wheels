@@ -31,14 +31,11 @@ export default function AdminBookings() {
   const [filtered, setFiltered] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-
   const [page, setPage] = useState(1);
-  const perPage = 10;
-
   const [selected, setSelected] = useState<Booking | null>(null);
+  const perPage = 10;
 
   useEffect(() => {
     const token = localStorage.getItem("ADMIN_TOKEN");
@@ -72,7 +69,6 @@ export default function AdminBookings() {
 
   const applyFilters = () => {
     let result = [...bookings];
-
     if (search) {
       result = result.filter(
         (b) =>
@@ -94,17 +90,6 @@ export default function AdminBookings() {
 
     setFiltered(result);
     setPage(1);
-  };
-
-  const formatDateTime = (date?: string, time?: string) => {
-    if (date) {
-      try {
-        return new Date(`${date}T${time || "00:00"}:00`).toLocaleString();
-      } catch {
-        return date;
-      }
-    }
-    return null;
   };
 
   const confirmBooking = async (booking_code: string) => {
@@ -168,8 +153,16 @@ export default function AdminBookings() {
             >
               Fleet
             </a>
+            {/* ✅ New Settings link */}
+            <a
+              href="/admin/settings"
+              className="px-3 py-1 rounded-md font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition"
+            >
+              Settings
+            </a>
           </nav>
         </div>
+
         <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
           <input
             type="text"
@@ -419,13 +412,13 @@ export default function AdminBookings() {
               {selected.depart_date && (
                 <p>
                   <strong>Depart:</strong>{" "}
-                  {formatDateTime(selected.depart_date, selected.depart_time)}
+                  {new Date(selected.depart_date).toLocaleString()}
                 </p>
               )}
               {selected.return_date && (
                 <p>
                   <strong>Return:</strong>{" "}
-                  {formatDateTime(selected.return_date, selected.return_time)}
+                  {new Date(selected.return_date).toLocaleString()}
                 </p>
               )}
               {selected.ride_date && (

@@ -87,23 +87,26 @@ export default function AdminFleet() {
         .substring(2)}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      // Upload file to Supabase
+      console.log("🚀 Starting image upload to bucket: vehicles");
+
+      // Upload file to Supabase storage
       const { error: uploadError } = await supabase.storage
         .from("vehicles")
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
+      // ✅ Get public URL
       const { data } = supabase.storage.from("vehicles").getPublicUrl(filePath);
       const publicUrl = data.publicUrl;
 
+      // ✅ Update form data immediately
       setFormData((prev) => ({
         ...prev,
         image_url: publicUrl,
       }));
 
-      setMessage("✅ Image uploaded successfully!");
+      setMessage("✅ Image uploaded successfully! Don’t forget to click 'Update'.");
     } catch (error: any) {
       console.error("Upload failed:", error);
       setMessage("❌ Upload failed: " + error.message);
@@ -112,21 +115,36 @@ export default function AdminFleet() {
     }
   };
 
+  // ✅ Fixed handleSubmit — now updates frontend instantly
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (uploading) {
+      setMessage("⏳ Please wait for image upload to finish before saving.");
+      return;
+    }
+
     const method = editVehicle ? "PUT" : "POST";
     const url = editVehicle
       ? "/.netlify/functions/update-vehicle"
       : "/.netlify/functions/create-vehicle";
 
     const cleanPayload: any = {
-      ...formData,
       id: editVehicle?.id,
+      name: formData.name.trim(),
+      type: formData.type?.trim() || null,
       capacity: formData.capacity === "" ? null : Number(formData.capacity),
       per_km_rate:
         formData.per_km_rate === "" ? null : Number(formData.per_km_rate),
       base_rate: formData.base_rate === "" ? null : Number(formData.base_rate),
+      image_url:
+        formData.image_url?.trim() ||
+        editVehicle?.image_url?.trim() ||
+        null,
+      availability: formData.availability ?? true,
     };
+
+    console.log("🚀 Sending to backend:", cleanPayload);
 
     try {
       const res = await fetch(url, {
@@ -139,14 +157,27 @@ export default function AdminFleet() {
       });
 
       const json = await res.json();
+      console.log("📥 Response:", json);
+
       if (!res.ok) throw new Error(json.error || "Failed to save vehicle");
+
+      // ✅ Update frontend immediately without refresh
+      if (editVehicle) {
+        setVehicles((prev) =>
+          prev.map((v) =>
+            v.id === editVehicle.id ? { ...v, ...cleanPayload } : v
+          )
+        );
+      } else {
+        setVehicles((prev) => [...prev, json.vehicle]);
+      }
 
       setMessage(editVehicle ? "✅ Vehicle updated!" : "✅ Vehicle added!");
       setShowForm(false);
       setEditVehicle(null);
       resetForm();
-      fetchVehicles();
     } catch (err: any) {
+      console.error("❌ Save failed:", err);
       setMessage("❌ " + err.message);
     }
   };
@@ -352,7 +383,7 @@ export default function AdminFleet() {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Labeled Inputs */}
+              {/* Inputs */}
               <div>
                 <label className="text-sm font-semibold text-gray-300">
                   Vehicle Name
@@ -422,7 +453,7 @@ export default function AdminFleet() {
                 />
               </div>
 
-              {/* Upload Section */}
+              {/* Upload */}
               <div>
                 <label className="text-sm font-semibold text-gray-300 mb-2">
                   Vehicle Image
@@ -467,11 +498,7 @@ export default function AdminFleet() {
                 >
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={uploading}
-                >
+                <Button type="submit" variant="primary" disabled={uploading}>
                   {editVehicle ? "Update" : "Add"}
                 </Button>
               </div>
