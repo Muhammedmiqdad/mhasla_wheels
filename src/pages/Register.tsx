@@ -20,6 +20,7 @@ const Register = () => {
   const navigate = useNavigate();
 
   const [name, setName] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -36,10 +37,15 @@ const Register = () => {
       toast.error("Please enter your full name");
       return;
     }
+    if (!phone.trim() || !/^[0-9]{8,15}$/.test(phone)) {
+      toast.error("Please enter a valid contact number");
+      return;
+    }
 
     setLoading(true);
     try {
-      const result = await register(email, password, name);
+      // Modified register call — assuming register(email, password, name, metadata)
+      const result = await register(email, password, name, { phone });
 
       if (result.error) {
         toast.error("Registration failed", { description: result.error });
@@ -103,6 +109,21 @@ const Register = () => {
                   onChange={(e) => setName(e.target.value)}
                   required
                   placeholder="Enter your full name"
+                  autoComplete="off"
+                  className="w-full px-4 py-2 rounded-md bg-[#121212] text-white border border-red-800/30 focus:ring-2 focus:ring-red-600 outline-none transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1 text-gray-400">
+                  Contact Number
+                </label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                  placeholder="Enter your phone number"
                   autoComplete="off"
                   className="w-full px-4 py-2 rounded-md bg-[#121212] text-white border border-red-800/30 focus:ring-2 focus:ring-red-600 outline-none transition"
                 />

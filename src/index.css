@@ -214,3 +214,111 @@ html, body, #root {
   animation: pulseGlow 2.5s ease-in-out infinite;
 }
 
+/* ------------------------------------------------------------------
+   React DatePicker Custom Dark Theme - Mhasla Wheels Style
+------------------------------------------------------------------- */
+
+.react-datepicker {
+  background-color: #0a0a0a !important;
+  border: 1px solid rgba(255, 59, 59, 0.2) !important;
+  color: #fff !important;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
+  border-radius: 0.75rem !important; /* matches Tailwind rounded-xl */
+  overflow: hidden;
+}
+
+.react-datepicker__header {
+  background-color: #111 !important;
+  border-bottom: 1px solid rgba(255, 59, 59, 0.25) !important;
+  color: #fff !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker-time__header,
+.react-datepicker-year-header {
+  color: #fff !important;
+  font-weight: 600;
+}
+
+.react-datepicker__day-name,
+.react-datepicker__day,
+.react-datepicker__time-name {
+  color: #ccc !important;
+}
+
+.react-datepicker__day:hover,
+.react-datepicker__month-text:hover,
+.react-datepicker__year-text:hover {
+  background-color: rgba(255, 59, 59, 0.25) !important;
+  color: #fff !important;
+  border-radius: 6px;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__month-text--selected,
+.react-datepicker__time-list-item--selected {
+  background-color: #dc2626 !important; /* Tailwind red-600 */
+  color: #fff !important;
+  border-radius: 6px;
+}
+
+.react-datepicker__time-list {
+  background-color: #0a0a0a !important;
+  border-left: 1px solid rgba(255, 59, 59, 0.15);
+}
+
+.react-datepicker__time-list-item {
+  color: #ccc !important;
+  padding: 6px 0 !important;
+}
+
+.react-datepicker__time-list-item:hover {
+  background-color: rgba(255, 59, 59, 0.2) !important;
+  color: #fff !important;
+}
+
+.react-datepicker__triangle {
+  display: none;
+}
+
+.react-datepicker__input-container input {
+  background-color: #111 !important;
+  border: 1px solid #333 !important;
+  color: #fff !important;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.react-datepicker__input-container input:focus {
+  outline: none;
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.4);
+}
+
+.react-datepicker__close-icon::after {
+  background-color: #dc2626 !important;
+  color: #fff !important;
+  font-weight: bold;
+}
+
+/* ------------------------------------------------------------------
+   Infused Logo Glow Animations (Hero Section)
+------------------------------------------------------------------- */
+@keyframes pulseSoft {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+@keyframes pulseHalo {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.07); }
+}
+
+.animate-pulse-soft {
+  animation: pulseSoft 3s ease-in-out infinite;
+}
+
+.animate-pulse-halo {
+  animation: pulseHalo 4s ease-in-out infinite;
+}

@@ -153,7 +153,13 @@ export default function AdminBookings() {
             >
               Fleet
             </a>
-            {/* ✅ New Settings link */}
+            {/* ✅ Added Metadata link */}
+            <a
+              href="/admin/metadata"
+              className="px-3 py-1 rounded-md font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition"
+            >
+              Metadata
+            </a>
             <a
               href="/admin/settings"
               className="px-3 py-1 rounded-md font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition"
@@ -243,7 +249,7 @@ export default function AdminBookings() {
         </div>
       )}
 
-      {/* Table */}
+      {/* Bookings Table */}
       {loading ? (
         <p>Loading...</p>
       ) : (

@@ -98,10 +98,26 @@ const Index = () => {
   ];
 
   const features = [
-    { icon: Shield, title: "Safety First", description: "Verified drivers & inspected vehicles" },
-    { icon: Clock, title: "24/7 Service", description: "Always ready when you are" },
-    { icon: Users, title: "Professional Drivers", description: "Experienced and courteous staff" },
-    { icon: Star, title: "Top Rated", description: "4.8+ customer satisfaction" },
+    {
+      icon: Shield,
+      title: "Safety First",
+      description: "Verified drivers & inspected vehicles",
+    },
+    {
+      icon: Clock,
+      title: "24/7 Service",
+      description: "Always ready when you are",
+    },
+    {
+      icon: Users,
+      title: "Professional Drivers",
+      description: "Experienced and courteous staff",
+    },
+    {
+      icon: Star,
+      title: "Top Rated",
+      description: "4.8+ customer satisfaction",
+    },
   ];
 
   if (showLoading) {
@@ -113,11 +129,23 @@ const Index = () => {
       <Header />
 
       {/* HERO SECTION */}
-      <section className="relative min-h-screen flex flex-col justify-center items-center text-center bg-[#181818] pt-24 md:pt-32 border-b border-red-800/20">
-        <div className="relative mb-12 animate-float">
-          <div className="absolute inset-0 w-72 h-72 rounded-full bg-red-600/20 blur-3xl animate-pulse-glow" />
-          <div className="relative w-44 h-44 rounded-full flex items-center justify-center bg-[#1f1f1f] border border-red-600/30 shadow-[0_0_40px_rgba(255,0,0,0.2)]">
-            <Car size={90} className="text-red-500 animate-float-delayed" />
+      <section className="relative min-h-screen flex flex-col justify-center items-center text-center bg-[#181818] pt-24 md:pt-32 border-b border-red-800/20 overflow-hidden">
+        <div className="relative mb-12">
+          {/* Inner Glow Layer */}
+          <div className="absolute inset-0 w-64 h-64 rounded-full bg-red-600/25 blur-3xl animate-pulse-glow" />
+
+          {/* Infused Logo Circle */}
+          <div
+            className="relative w-44 h-44 rounded-full flex items-center justify-center 
+            bg-[#0a0a0a] border border-red-600/40 shadow-[0_0_60px_rgba(255,0,0,0.3)]
+            overflow-hidden animate-float"
+          >
+            <div className="absolute inset-0 rounded-full bg-red-600/10 blur-md animate-pulse-soft" />
+            <img
+              src="/splash-logo.png" // ✅ your logo
+              alt="Mhasla Wheels Logo"
+              className="w-40 h-40 object-cover rounded-full relative z-10"
+            />
           </div>
         </div>
 
@@ -188,7 +216,9 @@ const Index = () => {
           {loadingFleet ? (
             <p className="text-gray-500">Loading fleet...</p>
           ) : fleet.length === 0 ? (
-            <p className="text-gray-500">No vehicles available at the moment.</p>
+            <p className="text-gray-500">
+              No vehicles available at the moment.
+            </p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {fleet.map((vehicle, i) => (
@@ -212,7 +242,9 @@ const Index = () => {
                   </div>
 
                   <div className="p-6 text-left">
-                    <h3 className="text-xl font-semibold mb-1">{vehicle.name}</h3>
+                    <h3 className="text-xl font-semibold mb-1">
+                      {vehicle.name}
+                    </h3>
                     <p className="text-gray-400 text-sm mb-4">
                       {vehicle.type || "Comfortable and reliable ride."}
                     </p>
@@ -270,7 +302,8 @@ const Index = () => {
             Ready to <span className="text-red-500">Book Your Ride?</span>
           </h2>
           <p className="text-gray-400 mb-10">
-            Join thousands of happy customers who trust Mhasla Wheels for every ride.
+            Join thousands of happy customers who trust Mhasla Wheels for every
+            ride.
           </p>
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
             <Button

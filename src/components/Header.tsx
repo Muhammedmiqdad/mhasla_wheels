@@ -66,10 +66,10 @@ const Header = () => {
                 <img
                   src="/splash-logo.png"
                   alt="Mhasla Wheels Logo"
-                  className="h-14 w-14 md:h-16 md:w-16 object-contain rounded-full bg-white p-1.5 shadow-[0_0_15px_rgba(255,0,0,0.35)]"
+                  className="h-[72px] w-[72px] md:h-[88px] md:w-[88px] object-contain rounded-full bg-white p-1.5 shadow-[0_0_20px_rgba(255,0,0,0.35)]"
                 />
               </div>
-              <span className="text-2xl md:text-4xl font-extrabold tracking-wide text-white leading-none">
+              <span className="text-xl md:text-3xl font-extrabold tracking-wide text-white leading-none">
                 Mhasla <span className="text-white">Wheels</span>
               </span>
             </Link>

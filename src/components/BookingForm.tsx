@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Car } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
+import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 type Vehicle = {
   id: string;
@@ -17,6 +19,7 @@ type Vehicle = {
 
 export default function BookingForm() {
   const { user } = useAuth();
+
   const [formData, setFormData] = useState({
     from: "",
     to: "",
@@ -25,6 +28,7 @@ export default function BookingForm() {
     depart_time: "",
     return_date: "",
     return_time: "",
+    distance_km: "",
     coupon_code: "",
     custom_journey_details: "",
     custom_rate: "",
@@ -37,9 +41,19 @@ export default function BookingForm() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [loadingVehicles, setLoadingVehicles] = useState(false);
-
   const [status, setStatus] = useState<null | string>(null);
   const [loading, setLoading] = useState(false);
+  const [estimatedFare, setEstimatedFare] = useState<number | null>(null);
+
+  const locationOptions = [
+    "Kuwait City",
+    "Mangaf",
+    "Salmiya",
+    "Fahaheel",
+    "Hawally",
+    "Jabriya",
+    "Farwaniya",
+  ];
 
   useEffect(() => {
     async function fetchVehicles() {
@@ -58,6 +72,34 @@ export default function BookingForm() {
     }
     fetchVehicles();
   }, []);
+
+  // 🧮 Calculate estimated fare dynamically
+  useEffect(() => {
+    if (!selectedVehicle) {
+      setEstimatedFare(null);
+      return;
+    }
+
+    const rate =
+      selectedVehicle.per_km_rate ||
+      selectedVehicle.base_rate ||
+      (formData.custom_rate ? parseFloat(formData.custom_rate) : 0);
+
+    const distance = parseFloat(formData.distance_km) || 0;
+    let estimate = 0;
+
+    if (formData.journey_type === "customize") {
+      estimate = rate;
+    } else if (formData.journey_type === "one_way") {
+      estimate = distance * rate;
+    } else if (formData.journey_type === "round_trip") {
+      estimate = distance * rate * 2;
+    } else if (formData.journey_type === "shared") {
+      estimate = distance * rate * 0.6; // discounted for shared
+    }
+
+    setEstimatedFare(Math.max(estimate, selectedVehicle.base_rate || 0));
+  }, [selectedVehicle, formData.distance_km, formData.journey_type, formData.custom_rate]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -81,6 +123,7 @@ export default function BookingForm() {
         pickup_location: formData.from,
         drop_location: formData.to,
         vehicle_id: selectedVehicle?.id || null,
+        estimated_fare: estimatedFare,
         customer_id: user.id,
       };
 
@@ -120,28 +163,41 @@ export default function BookingForm() {
       onSubmit={handleSubmit}
       className="space-y-6 p-6 bg-[#0A0A0A] text-white shadow-xl rounded-2xl max-w-3xl mx-auto border border-gray-800"
     >
-      {/* From & To */}
+      {/* Pickup & Drop */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input
+        <select
           name="from"
           value={formData.from}
           onChange={handleChange}
-          placeholder="Pickup Location"
           required
-          className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 outline-none"
-        />
-        <input
+          className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-red-500 outline-none"
+        >
+          <option value="">Select Pickup Location</option>
+          {locationOptions.map((loc) => (
+            <option key={loc} value={loc}>
+              {loc}
+            </option>
+          ))}
+        </select>
+
+        <select
           name="to"
           value={formData.to}
           onChange={handleChange}
-          placeholder="Drop Location"
           required
-          className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 outline-none"
-        />
+          className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-red-500 outline-none"
+        >
+          <option value="">Select Drop Location</option>
+          {locationOptions.map((loc) => (
+            <option key={loc} value={loc}>
+              {loc}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Journey Type */}
-      <div className="flex gap-3 justify-center flex-wrap">
+      <div className="flex flex-wrap justify-center gap-3 mt-2">
         {[
           { key: "one_way", label: "One Way" },
           { key: "round_trip", label: "Round Trip" },
@@ -149,20 +205,109 @@ export default function BookingForm() {
           { key: "customize", label: "Customize" },
         ].map((opt) => (
           <button
-            type="button"
             key={opt.key}
+            type="button"
             onClick={() =>
-              setFormData((s) => ({ ...s, journey_type: opt.key }))
+              setFormData((prev) => ({ ...prev, journey_type: opt.key }))
             }
-            className={`px-4 py-2 rounded-lg border transition-all ${
+            className={`px-5 py-2 rounded-full border text-sm font-medium transition-all ${
               formData.journey_type === opt.key
-                ? "bg-red-600 text-white border-red-600"
-                : "bg-[#111] text-gray-300 border-gray-700 hover:bg-[#1A1A1A]"
+                ? "bg-red-600 text-white border-red-600 shadow-md scale-105"
+                : "bg-[#111] text-gray-300 border-gray-700 hover:bg-[#1a1a1a] hover:text-white"
             }`}
           >
             {opt.label}
           </button>
         ))}
+      </div>
+
+      {/* Distance Input */}
+      {formData.journey_type !== "customize" && (
+        <div>
+          <label className="block text-sm text-gray-400 mb-1">
+            Approx Distance (km)
+          </label>
+          <input
+            type="number"
+            name="distance_km"
+            value={formData.distance_km}
+            onChange={handleChange}
+            placeholder="Enter estimated distance"
+            className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-red-500 outline-none"
+            required
+          />
+        </div>
+      )}
+
+      {/* Date & Time */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm text-gray-400 mb-1">
+            Pickup Date & Time
+          </label>
+          <ReactDatePicker
+            selected={
+              formData.depart_date
+                ? new Date(
+                    formData.depart_date +
+                      "T" +
+                      (formData.depart_time || "00:00")
+                  )
+                : null
+            }
+            onChange={(date: Date | null) => {
+              if (date) {
+                setFormData((prev) => ({
+                  ...prev,
+                  depart_date: date.toISOString().split("T")[0],
+                  depart_time: date.toTimeString().slice(0, 5),
+                }));
+              }
+            }}
+            showTimeSelect
+            dateFormat="MMMM d, yyyy h:mm aa"
+            placeholderText="Select date and time"
+            className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 outline-none"
+            minDate={new Date()}
+          />
+        </div>
+
+        {formData.journey_type === "round_trip" && (
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">
+              Return Date & Time
+            </label>
+            <ReactDatePicker
+              selected={
+                formData.return_date
+                  ? new Date(
+                      formData.return_date +
+                        "T" +
+                        (formData.return_time || "00:00")
+                    )
+                  : null
+              }
+              onChange={(date: Date | null) => {
+                if (date) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    return_date: date.toISOString().split("T")[0],
+                    return_time: date.toTimeString().slice(0, 5),
+                  }));
+                }
+              }}
+              showTimeSelect
+              dateFormat="MMMM d, yyyy h:mm aa"
+              placeholderText="Select return date and time"
+              className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 outline-none"
+              minDate={
+                formData.depart_date
+                  ? new Date(formData.depart_date)
+                  : new Date()
+              }
+            />
+          </div>
+        )}
       </div>
 
       {/* Custom Journey */}
@@ -172,46 +317,45 @@ export default function BookingForm() {
             name="custom_journey_details"
             value={formData.custom_journey_details}
             onChange={handleChange}
-            placeholder="Describe your custom journey (e.g., multiple stops, special requirements)"
-            className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 outline-none"
+            placeholder="Describe your custom journey..."
+            className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-red-500 outline-none"
             rows={3}
             required
           />
-          <input
-            type="number"
-            name="custom_rate"
-            value={formData.custom_rate}
-            onChange={handleChange}
-            placeholder="Enter custom rate (₹)"
-            className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 outline-none"
-            required
-          />
-          <select
-            name="custom_unit"
-            value={formData.custom_unit}
-            onChange={handleChange}
-            className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-red-500 outline-none"
-            required
-          >
-            <option value="">Select Unit</option>
-            <option value="km">Per Km</option>
-            <option value="hour">Per Hour</option>
-            <option value="day">Per Day</option>
-            <option value="trip">Per Trip</option>
-          </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <input
+              type="number"
+              name="custom_rate"
+              value={formData.custom_rate}
+              onChange={handleChange}
+              placeholder="Custom Rate (₹)"
+              className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-red-500 outline-none"
+              required
+            />
+            <select
+              name="custom_unit"
+              value={formData.custom_unit}
+              onChange={handleChange}
+              className="w-full p-3 bg-[#111] border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-red-500 outline-none"
+              required
+            >
+              <option value="">Select Unit</option>
+              <option value="km">Per Km</option>
+              <option value="hour">Per Hour</option>
+              <option value="day">Per Day</option>
+              <option value="trip">Per Trip</option>
+            </select>
+          </div>
         </div>
       )}
 
-      {/* Vehicles */}
+      {/* Vehicle Selection */}
       <div>
         <h4 className="font-semibold mb-2 text-gray-300">Available Vehicles</h4>
         {loadingVehicles ? (
           <p className="text-sm text-gray-500">Loading vehicles...</p>
         ) : (
           <div className="space-y-3">
-            {vehicles.filter((v) => v.availability !== false).length === 0 && (
-              <p className="text-sm text-gray-500">No vehicles available.</p>
-            )}
             {vehicles
               .filter((v) => v.availability !== false)
               .map((v) => (
@@ -255,54 +399,59 @@ export default function BookingForm() {
         )}
       </div>
 
-      {/* Coupon */}
-      <div className="flex gap-2 items-center">
-        <input
-          name="coupon_code"
-          value={formData.coupon_code}
-          onChange={handleChange}
-          placeholder="Enter coupon code (optional)"
-          className="flex-1 p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 outline-none"
-        />
-        <button
-          type="button"
-          className="px-5 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition text-white font-medium"
-        >
-          Apply
-        </button>
-      </div>
-
-      {/* Contact Info */}
-      {!user && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <input
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Name"
-            className="p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400"
-            required
-          />
-          <input
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            placeholder="Phone"
-            className="p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400"
-            required
-          />
-          <input
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Email"
-            className="p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400"
-            required
-          />
+      {/* Live Fare Estimate */}
+      {estimatedFare && (
+        <div className="mt-4 p-4 rounded-lg bg-red-600/10 border border-red-600 text-center">
+          <p className="text-lg font-semibold text-white">
+            💰 Estimated Fare:{" "}
+            <span className="text-red-500">₹{estimatedFare.toFixed(2)}</span>
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            (Approximate fare — actual total may vary based on distance and time)
+          </p>
         </div>
       )}
 
-      {/* Submit */}
+      {/* Guest Info */}
+      {!user && (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <input
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Full Name"
+              className="p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400"
+              required
+            />
+            <input
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Phone Number"
+              className="p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400"
+              required
+            />
+            <input
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Email Address"
+              className="p-3 bg-[#111] border border-gray-700 rounded-lg text-white placeholder-gray-400"
+              required
+            />
+          </div>
+
+          <p className="text-sm text-gray-400 text-center mt-2">
+            Don’t have an account?{" "}
+            <Link to="/register" className="text-red-500 hover:text-red-400">
+              Register here
+            </Link>
+          </p>
+        </>
+      )}
+
+      {/* Submit Buttons */}
       <div className="flex flex-col sm:flex-row gap-3 sm:justify-between">
         <Button
           type="submit"
@@ -322,19 +471,8 @@ export default function BookingForm() {
         </Button>
       </div>
 
-      {/* Status */}
       {status && (
         <p className="text-center text-sm mt-2 text-gray-300">{status}</p>
-      )}
-
-      {!user && (
-        <div className="mt-4 p-3 rounded-lg bg-red-600/10 border border-red-600 flex items-center gap-2 text-sm text-gray-200">
-          🔒 You can explore vehicles, but{" "}
-          <Link to="/login" className="text-red-400 underline font-medium">
-            login
-          </Link>{" "}
-          to complete your booking.
-        </div>
       )}
     </form>
   );

@@ -15,10 +15,11 @@ interface AuthContextType {
   register: (
     email: string,
     password: string,
-    name: string
+    name: string,
+    metadata?: { phone?: string }
   ) => Promise<{ error?: string }>;
   logout: () => Promise<void>;
-  refreshUser: () => Promise<void>; // ✅ new helper
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -60,13 +61,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return error ? { error: error.message } : {};
   };
 
-  // ✅ Register (with name)
-  const register = async (email: string, password: string, name: string) => {
+  // ✅ Register (with name + phone metadata)
+  const register = async (
+    email: string,
+    password: string,
+    name: string,
+    metadata?: { phone?: string }
+  ) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { name }, // store name in metadata
+        data: {
+          name,
+          phone: metadata?.phone || "",
+        },
       },
     });
     return error ? { error: error.message } : {};
@@ -75,10 +84,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // ✅ Logout
   const logout = async () => {
     await supabase.auth.signOut();
-    setUser(null); // clear local state immediately
+    setUser(null);
   };
 
-  // ✅ Refresh user after updating metadata (e.g. CompleteProfile)
+  // ✅ Refresh user (useful after profile update)
   const refreshUser = async () => {
     const { data } = await supabase.auth.getUser();
     if (data.user) setUser(data.user);

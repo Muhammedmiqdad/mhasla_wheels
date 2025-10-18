@@ -23,7 +23,9 @@ import AuthCallback from "./pages/AuthCallback";
 import AdminLogin from "./pages/AdminLogin";
 import AdminBookings from "./pages/AdminBookings";
 import AdminFleet from "@/pages/AdminFleet";
-import AdminSettings from "@/pages/AdminSettings"; // ✅ Added new Admin Settings page
+import AdminSettings from "@/pages/AdminSettings"; 
+import AdminMetadataConsole from "./pages/AdminMetadataConsole";
+
 
 // ✅ Customer pages
 import Login from "./pages/Login";
@@ -85,6 +87,8 @@ const App = () => {
               <Route path="/admin/bookings" element={<AdminBookings />} />
               <Route path="/admin/fleet" element={<AdminFleet />} />
               <Route path="/admin/settings" element={<AdminSettings />} /> {/* ✅ Added */}
+              <Route path="/admin/metadata" element={<AdminMetadataConsole />} />
+
 
               {/* 🚫 Catch-all route */}
               <Route path="*" element={<NotFound />} />
