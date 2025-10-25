@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 
 interface Meta {
   id?: number;
+  page_name: string;
   site_title: string;
   site_description: string;
   meta_keywords: string;
@@ -15,6 +16,7 @@ export default function AdminMetadataConsole() {
   const [editing, setEditing] = useState<Meta | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // ✅ Fetch all metadata entries
   const fetchMetadata = async () => {
     try {
       const res = await fetch("/.netlify/functions/metadata-crud", {
@@ -23,7 +25,7 @@ export default function AdminMetadataConsole() {
       const data = await res.json();
       setMetadata(data || []);
     } catch (err) {
-      console.error("Error fetching metadata:", err);
+      console.error("❌ Error fetching metadata:", err);
     }
   };
 
@@ -31,13 +33,14 @@ export default function AdminMetadataConsole() {
     fetchMetadata();
   }, []);
 
+  // ✅ Save metadata (add or update)
   const handleSave = async () => {
     if (!editing) return;
     setLoading(true);
     const method = editing?.id ? "PUT" : "POST";
 
     try {
-      await fetch("/.netlify/functions/metadata-crud", {
+      const res = await fetch("/.netlify/functions/metadata-crud", {
         method,
         headers: {
           "Content-Type": "application/json",
@@ -45,15 +48,18 @@ export default function AdminMetadataConsole() {
         },
         body: JSON.stringify(editing),
       });
+
+      if (!res.ok) throw new Error("Failed to save metadata");
       setEditing(null);
       fetchMetadata();
     } catch (err) {
-      console.error("Error saving metadata:", err);
+      console.error("❌ Error saving metadata:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  // ✅ Delete record
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this metadata?")) return;
     try {
@@ -67,7 +73,7 @@ export default function AdminMetadataConsole() {
       });
       fetchMetadata();
     } catch (err) {
-      console.error("Error deleting metadata:", err);
+      console.error("❌ Error deleting metadata:", err);
     }
   };
 
@@ -121,22 +127,30 @@ export default function AdminMetadataConsole() {
           🧭 Website Metadata Manager
         </h2>
 
+        <p className="text-gray-400 mb-6">
+          Manage SEO and content metadata for each section of your website.
+        </p>
+
         {/* Metadata List */}
         <div className="space-y-3">
           {metadata.length === 0 && (
             <p className="text-gray-500 italic">No metadata found.</p>
           )}
+
           {metadata.map((meta) => (
             <div
               key={meta.id}
-              className="p-4 bg-[#111] border border-gray-700 rounded-lg flex justify-between items-center"
+              className="p-4 bg-[#111] border border-gray-700 rounded-lg flex justify-between items-center hover:border-red-700 transition"
             >
               <div>
-                <h3 className="font-semibold text-lg text-white">
-                  {meta.site_title}
+                <h3 className="font-semibold text-lg text-white capitalize">
+                  {meta.page_name}
                 </h3>
                 <p className="text-gray-400 text-sm">
-                  {meta.site_description}
+                  {meta.site_title || "— No title set —"}
+                </p>
+                <p className="text-gray-500 text-xs truncate w-64">
+                  {meta.site_description || "— No description —"}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -157,10 +171,11 @@ export default function AdminMetadataConsole() {
           ))}
         </div>
 
-        {/* Add New Button */}
+        {/* Add New */}
         <Button
           onClick={() =>
             setEditing({
+              page_name: "",
               site_title: "",
               site_description: "",
               meta_keywords: "",
@@ -169,25 +184,34 @@ export default function AdminMetadataConsole() {
           }
           className="bg-green-600 hover:bg-green-700"
         >
-          Add New Metadata
+          ➕ Add New Page Metadata
         </Button>
       </div>
 
       {/* Edit Modal */}
       {editing && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-[#111] p-6 rounded-xl w-full max-w-md border border-red-700 space-y-3">
+          <div className="bg-[#111] p-6 rounded-xl w-full max-w-md border border-red-700 space-y-3 shadow-lg">
             <h2 className="text-xl font-semibold mb-2 text-red-500">
-              {editing.id ? "Edit Metadata" : "Add Metadata"}
+              {editing.id ? "Edit Page Metadata" : "Add Metadata"}
             </h2>
 
+            <input
+              name="page_name"
+              value={editing.page_name}
+              onChange={(e) =>
+                setEditing({ ...editing, page_name: e.target.value })
+              }
+              placeholder="Page Name (e.g. home, about, services)"
+              className="w-full p-3 bg-[#1A1A1A] border border-gray-700 rounded text-white"
+            />
             <input
               name="site_title"
               value={editing.site_title}
               onChange={(e) =>
                 setEditing({ ...editing, site_title: e.target.value })
               }
-              placeholder="Site Title"
+              placeholder="Page Title"
               className="w-full p-3 bg-[#1A1A1A] border border-gray-700 rounded"
             />
             <textarea
@@ -196,7 +220,7 @@ export default function AdminMetadataConsole() {
               onChange={(e) =>
                 setEditing({ ...editing, site_description: e.target.value })
               }
-              placeholder="Description"
+              placeholder="Page Description"
               className="w-full p-3 bg-[#1A1A1A] border border-gray-700 rounded"
             />
             <input
@@ -205,7 +229,7 @@ export default function AdminMetadataConsole() {
               onChange={(e) =>
                 setEditing({ ...editing, meta_keywords: e.target.value })
               }
-              placeholder="Keywords"
+              placeholder="Keywords (comma separated)"
               className="w-full p-3 bg-[#1A1A1A] border border-gray-700 rounded"
             />
             <input

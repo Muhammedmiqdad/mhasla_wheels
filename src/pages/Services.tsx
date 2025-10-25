@@ -1,3 +1,4 @@
+// src/pages/Services.tsx
 import {
   Car,
   Bike,
@@ -11,11 +12,35 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BookingModal from "@/components/BookingModal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/supabaseClient";
+import { Helmet } from "react-helmet"; // ✅ Added for meta tags
 
 const Services = () => {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
+  // ✅ Metadata state
+  const [meta, setMeta] = useState<any>(null);
+
+  // ✅ Fetch metadata for "services" page
+  const fetchMeta = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("metadata")
+        .select("*")
+        .eq("page_name", "services")
+        .single();
+      if (error) throw error;
+      setMeta(data);
+    } catch (err) {
+      console.error("❌ Error fetching metadata for Services page:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchMeta();
+  }, []);
 
   const services = [
     {
@@ -101,6 +126,40 @@ const Services = () => {
 
   return (
     <div className="min-h-screen bg-[#121212] text-white flex flex-col">
+      {/* ✅ Dynamic Meta Tags */}
+      {meta && (
+        <Helmet>
+          <title>{meta.site_title || "Our Services - Mhasla Wheels"}</title>
+          <meta
+            name="description"
+            content={
+              meta.site_description ||
+              "Explore our range of premium car, bike, and travel services in Mhasla."
+            }
+          />
+          <meta
+            name="keywords"
+            content={
+              meta.meta_keywords ||
+              "car rental, bike rental, mhasla cab, services, tours"
+            }
+          />
+          <meta
+            property="og:title"
+            content={meta.site_title || "Mhasla Wheels Services"}
+          />
+          <meta
+            property="og:description"
+            content={
+              meta.site_description ||
+              "Premium transportation and travel packages from Mhasla Wheels."
+            }
+          />
+          <meta property="og:image" content={meta.og_image_url || "/splash-logo.png"} />
+          <meta property="og:type" content="website" />
+        </Helmet>
+      )}
+
       <Header onBookRide={() => setIsBookingModalOpen(true)} />
 
       {/* Hero Section */}

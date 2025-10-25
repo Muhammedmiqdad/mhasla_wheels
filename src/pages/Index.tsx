@@ -18,12 +18,32 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import LoadingScreen from "@/components/LoadingScreen";
 import { supabase } from "@/supabaseClient";
+import { Helmet } from "react-helmet"; // ✅ Added for dynamic meta tags
 
 const Index = () => {
   const [showLoading, setShowLoading] = useState(true);
   const [fleet, setFleet] = useState<any[]>([]);
   const [loadingFleet, setLoadingFleet] = useState(true);
   const [liveUpdating, setLiveUpdating] = useState(false);
+
+  // ✅ Metadata state
+  const [meta, setMeta] = useState<any>(null);
+
+  // ✅ Fetch metadata for the home page
+  const fetchMeta = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("metadata")
+        .select("*")
+        .eq("page_name", "home")
+        .single();
+
+      if (error) throw error;
+      setMeta(data);
+    } catch (err) {
+      console.error("❌ Error fetching metadata:", err);
+    }
+  };
 
   // ✅ Fetch fleet from Supabase
   const fetchFleet = async () => {
@@ -42,6 +62,7 @@ const Index = () => {
 
   useEffect(() => {
     fetchFleet();
+    fetchMeta();
 
     // ✅ Realtime updates (requires Realtime enabled on Supabase table)
     const channel = supabase
@@ -126,6 +147,31 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-[#121212] text-white">
+      {/* ✅ Dynamic Meta Tags */}
+      {meta && (
+        <Helmet>
+          <title>{meta.site_title || "Mhasla Wheels - Premium Rides"}</title>
+          <meta
+            name="description"
+            content={meta.site_description || "Luxury transportation in Mhasla."}
+          />
+          <meta
+            name="keywords"
+            content={
+              meta.meta_keywords ||
+              "mhasla wheels, taxi, car rental, cab service, mhasla rides"
+            }
+          />
+          <meta property="og:title" content={meta.site_title || "Mhasla Wheels"} />
+          <meta
+            property="og:description"
+            content={meta.site_description || "Your trusted luxury ride partner."}
+          />
+          <meta property="og:image" content={meta.og_image_url || "/splash-logo.png"} />
+          <meta property="og:type" content="website" />
+        </Helmet>
+      )}
+
       <Header />
 
       {/* HERO SECTION */}
@@ -142,7 +188,7 @@ const Index = () => {
           >
             <div className="absolute inset-0 rounded-full bg-red-600/10 blur-md animate-pulse-soft" />
             <img
-              src="/splash-logo.png" // ✅ your logo
+              src="/splash-logo.png"
               alt="Mhasla Wheels Logo"
               className="w-40 h-40 object-cover rounded-full relative z-10"
             />
@@ -216,9 +262,7 @@ const Index = () => {
           {loadingFleet ? (
             <p className="text-gray-500">Loading fleet...</p>
           ) : fleet.length === 0 ? (
-            <p className="text-gray-500">
-              No vehicles available at the moment.
-            </p>
+            <p className="text-gray-500">No vehicles available at the moment.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {fleet.map((vehicle, i) => (
@@ -302,8 +346,7 @@ const Index = () => {
             Ready to <span className="text-red-500">Book Your Ride?</span>
           </h2>
           <p className="text-gray-400 mb-10">
-            Join thousands of happy customers who trust Mhasla Wheels for every
-            ride.
+            Join thousands of happy customers who trust Mhasla Wheels for every ride.
           </p>
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
             <Button

@@ -1,10 +1,35 @@
+// src/pages/About.tsx
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Car, Users, Award, MapPin } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/supabaseClient";
+import { Helmet } from "react-helmet"; // ✅ added
 
 const About = () => {
+  const [meta, setMeta] = useState<any>(null); // ✅ metadata state
+
+  // ✅ Fetch metadata for "about" page
+  const fetchMeta = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("metadata")
+        .select("*")
+        .eq("page_name", "about")
+        .single();
+      if (error) throw error;
+      setMeta(data);
+    } catch (err) {
+      console.error("❌ Error fetching metadata for About page:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchMeta();
+  }, []);
+
   const values = [
     {
       icon: Car,
@@ -34,6 +59,37 @@ const About = () => {
 
   return (
     <div className="min-h-screen bg-[#121212] text-white flex flex-col">
+      {/* ✅ Dynamic Meta Tags */}
+      {meta && (
+        <Helmet>
+          <title>{meta.site_title || "About - Mhasla Wheels"}</title>
+          <meta
+            name="description"
+            content={
+              meta.site_description ||
+              "Learn about Mhasla Wheels — your trusted transportation partner in Mhasla."
+            }
+          />
+          <meta
+            name="keywords"
+            content={
+              meta.meta_keywords ||
+              "about mhasla wheels, mhasla transport, car rentals mhasla"
+            }
+          />
+          <meta property="og:title" content={meta.site_title || "About Mhasla Wheels"} />
+          <meta
+            property="og:description"
+            content={
+              meta.site_description ||
+              "Discover the story, mission, and values behind Mhasla Wheels."
+            }
+          />
+          <meta property="og:image" content={meta.og_image_url || "/splash-logo.png"} />
+          <meta property="og:type" content="website" />
+        </Helmet>
+      )}
+
       <Header />
 
       {/* Hero Section */}
